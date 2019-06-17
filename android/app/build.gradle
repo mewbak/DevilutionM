@@ -12,7 +12,9 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
-                cppFlags "-std=c++11 -frtti -fexceptions"
+                arguments '-DBUILD_TESTING=OFF','-DANDROID_TOOLCHAIN=gcc'
+                cppFlags "-llog -w -std=c++14 -frtti -fexceptions -fpermissive -fno-aggressive-loop-optimizations -fno-strict-aliasing "
+
             }
         }
 	ndk {

@@ -1,6 +1,15 @@
 package pvallet.com.github.hello_sdl2;
 
 import org.libsdl.app.SDLActivity;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.app.Activity;
+
+
+
+import android.view.inputmethod.InputMethodManager;
+
 
 public class HelloSDL2Activity extends SDLActivity
 {
@@ -13,12 +22,41 @@ public class HelloSDL2Activity extends SDLActivity
      *
      * @return names of shared libraries to be loaded (e.g. "SDL2", "main").
      */
-    @Override
+
+     public static void hideKeyboard(Activity activity) {
+         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+         //Find the currently focused view, so we can grab the correct window token from it.
+         View view = activity.getCurrentFocus();
+         //If no view currently has focus, create a new one, just so we can grab a window token from it
+         if (view == null) {
+             view = new View(activity);
+         }
+         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+     }
+
+
+         @Override
     protected String[] getLibraries() {
-        return new String[]{
+
+//       android.os.Debug.waitForDebugger();
+
+
+
+
+
+
+	 return new String[]{
                 "SDL2",
                 "SDL2_image",
+		"SDL2_mixer",
                 "main"
         };
+
     }
-}
+
+
+
+
+
+    }
+
