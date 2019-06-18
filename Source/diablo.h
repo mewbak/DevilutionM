@@ -41,6 +41,7 @@ extern bool CUSTOM_SDL_KEY_LSHIFT;
 void __cdecl diablo_cpp_init();
 void __cdecl FreeGameMem();
 int __fastcall diablo_init_menu(int a1, int bSinglePlayer);
+BOOL StartGame(BOOL bNewGame, BOOL bSinglePlayer);
 void __fastcall run_game_loop(int uMsg);
 void __fastcall start_game(int uMsg);
 void __cdecl free_game();

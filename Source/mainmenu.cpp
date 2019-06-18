@@ -169,7 +169,8 @@ int __fastcall mainmenu_init_menu(int a1)
 	if ( a1 == 4 )
 		return 1;
 	music_stop();
-	v3 = diablo_init_menu(v1 != 2, v1 != 3);
+	v3 = StartGame(v1 != 2, v1 != 3);
+	//v3 = diablo_init_menu(v1 != 2, v1 != 3);
 	if ( v3 )
 		mainmenu_refresh_music();
 	return v3;
