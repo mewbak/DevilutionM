@@ -2,13 +2,13 @@
 #ifndef __RENDER_H__
 #define __RENDER_H__
 
-void __fastcall drawTopArchesUpperScreen(unsigned char *pbDst);
-void __fastcall drawBottomArchesUpperScreen(unsigned char *pbDst, unsigned int *pMask);
-void __fastcall drawUpperScreen(unsigned char *pbDst);
-void __fastcall drawTopArchesLowerScreen(unsigned char *pbDst);
-void __fastcall drawBottomArchesLowerScreen(unsigned char *pbDst, unsigned int *pMask);
-void __fastcall drawLowerScreen(unsigned char *pbDst);
-void __fastcall world_draw_black_tile(unsigned char *pbDst);
+void drawTopArchesUpperScreen(BYTE *pBuff);
+void drawBottomArchesUpperScreen(BYTE *pBuff, unsigned int *pMask);
+void drawUpperScreen(BYTE *pBuff);
+void drawTopArchesLowerScreen(BYTE *pBuff);
+void drawBottomArchesLowerScreen(BYTE *pBuff, unsigned int *pMask);
+void drawLowerScreen(BYTE *pBuff);
+void world_draw_black_tile(BYTE *pBuff);
 
 /* rdata */
 
@@ -24,5 +24,11 @@ extern unsigned int WallMask[32];
 extern int WorldTbl3x16[48];
 extern int WorldTbl17_1[17];
 extern int WorldTbl17_2[17];
+
+
+//SDL RENDER STUFF
+BOOL LoadArtImage(char *pszFile, void **pBuffer, int frames, DWORD *data);
+
+
 
 #endif /* __RENDER_H__ */

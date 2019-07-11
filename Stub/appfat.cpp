@@ -3,12 +3,34 @@
 #include "../types.h"
 #include "stubs.h"
 
-#include <jni.h>
-#include <android/log.h>
+//#include <jni.h>
+//#include <android/log.h>
 
 //char cwd[1024];
 //if (getcwd(cwd, sizeof(cwd)) != NULL)
 //    __android_log_print(ANDROID_LOG_INFO, "", cwd);
+
+
+
+void __cdecl app_fatal(const char *pszFmt, ...)
+{
+	va_list va;
+
+	va_start(va, pszFmt);
+	FreeDlg();
+#ifdef _DEBUG
+	TriggerBreak();
+#endif
+
+	if (pszFmt)
+		MsgBox(pszFmt, va);
+
+	va_end(va);
+
+	init_cleanup(FALSE);
+	exit(1);
+}
+
 
 
 
@@ -27,7 +49,7 @@ void TermMsg(char *pszFmt, ...)
 	abort();
 }
 
-void __fastcall ErrDlg(int template_id, int error_code, char *log_file_path, int log_line_nr)
+void ErrDlg(int template_id, DWORD error_code, char *log_file_path, int log_line_nr)
 {
 	UNIMPLEMENTED();
 }
@@ -44,10 +66,10 @@ void __fastcall DirErrorDlg(char *error)
 
 bool __cdecl InsertCDDlg()
 {
-	UNIMPLEMENTED();
+	DUMMY();
 }
 
-void __fastcall FileErrDlg(char *error)
+void FileErrDlg(const char *error)
 {
 	UNIMPLEMENTED();
 }
@@ -57,7 +79,7 @@ void __fastcall DDErrMsg(int error_code, int log_line_nr, char *log_file_path)
 	UNIMPLEMENTED();
 }
 
-void __fastcall DiskFreeDlg(char *error)
+void FreeDlg()
 {
 	UNIMPLEMENTED();
 }

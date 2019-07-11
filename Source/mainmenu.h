@@ -2,18 +2,24 @@
 #ifndef __MAINMENU_H__
 #define __MAINMENU_H__
 
-extern int mainmenu_cpp_init_value; // weak
-extern char chr_name_str[16];
+extern char gszHero[16];
 
-void __cdecl mainmenu_cpp_init();
-void __cdecl mainmenu_refresh_music();
+void mainmenu_refresh_music();
 void __stdcall mainmenu_create_hero(int arg1, int arg2, int arg3, int arg4, char *name_1, char *name_2);
-int __stdcall mainmenu_select_hero_dialog(int u1, int u2, int u3, int u4, int mode, char *cname, int clen, char *cdesc, int cdlen, int *multi);
-void __cdecl mainmenu_loop();
-int __cdecl mainmenu_single_player();
-int __fastcall mainmenu_init_menu(int a1);
-int __cdecl mainmenu_multi_player();
-void __cdecl mainmenu_play_intro();
+int __stdcall mainmenu_select_hero_dialog(
+    const _SNETPROGRAMDATA *client_info,
+    const _SNETPLAYERDATA *user_info,
+    const _SNETUIDATA *ui_info,
+    const _SNETVERSIONDATA *fileinfo,
+    DWORD mode,               // 4 chars, e.g. 'IPXN', 'BNET' etc. */
+    char *cname, DWORD clen,  // character name will be copied here
+    char *cdesc, DWORD cdlen, // character "description" will be copied here (used to advertise games)
+    BOOL *multi);             // new character? - unsure about this
+void mainmenu_loop();
+BOOL mainmenu_single_player();
+BOOL mainmenu_init_menu(int a1);
+BOOL mainmenu_multi_player();
+void mainmenu_play_intro();
 
 /* rdata */
 

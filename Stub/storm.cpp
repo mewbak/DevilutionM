@@ -91,7 +91,7 @@ BOOL STORMAPI SFileDdaEnd(HANDLE directsound)
 	UNIMPLEMENTED();
 }
 
-BOOL STORMAPI SFileDdaGetPos(HANDLE directsound, int a2, int a3)
+BOOL STORMAPI SFileDdaGetPos(HANDLE hFile, DWORD *current, DWORD *end)
 {
 	UNIMPLEMENTED();
 }
@@ -106,9 +106,10 @@ BOOL STORMAPI SFileDdaSetVolume(HANDLE directsound, signed int bigvolume, signed
 	UNIMPLEMENTED();
 }
 
-BOOL STORMAPI SFileGetFileArchive(HANDLE hFile, HANDLE archive)
+BOOL STORMAPI SFileGetFileArchive(HANDLE hFile, HANDLE *archive)
 {
 	UNIMPLEMENTED();
+	return true;
 }
 
 // LONG STORMAPI SFileGetFileSize(HANDLE hFile, LPDWORD lpFileSizeHigh)
@@ -176,12 +177,21 @@ HWND STORMAPI SDrawGetFrameWindow(HWND *sdraw_framewindow)
 //	UNIMPLEMENTED();
 //}
 
-void *STORMAPI SMemAlloc(size_t amount, char *logfilename, int logline, char defaultValue)
+//void *STORMAPI SMemAlloc(size_t amount, char *logfilename, int logline, char defaultValue)
+// void *STORMAPI SMemAlloc(unsigned int amount, char *logfilename, int logline, char defaultValue)
+// {
+// 	// fprintf(stderr, "%s: %d (%s:%d)\n", __FUNCTION__, amount, logfilename, logline);
+// 	assert(amount != -1);
+// 	return malloc(amount);
+// }
+
+void *SMemAlloc(unsigned int amount, char *logfilename, int logline, int defaultValue)
 {
 	// fprintf(stderr, "%s: %d (%s:%d)\n", __FUNCTION__, amount, logfilename, logline);
-	assert(amount != -1);
+	assert(amount != -1u);
 	return malloc(amount);
 }
+
 
 BOOL STORMAPI SMemFree(void *location, char *logfilename, int logline, char defaultValue)
 {
@@ -336,19 +346,22 @@ void __cdecl SDrawRealizePalette(void)
 //	UNIMPLEMENTED();
 //}
 
-bool __stdcall SNetGetOwnerTurnsWaiting(int *)
+BOOL __stdcall SNetGetOwnerTurnsWaiting(DWORD *)
 {
 	UNIMPLEMENTED();
 }
 
-void *__stdcall SNetUnregisterEventHandler(int, void(__stdcall *)(struct _SNETEVENT *))
+//void *__stdcall SNetUnregisterEventHandler(int, void(__stdcall *)(struct _SNETEVENT *))
+BOOL __stdcall SNetUnregisterEventHandler(int,SEVTHANDLER)
 {
 	DUMMY();
 	return (void *)-1;
 }
 
-void *__stdcall SNetRegisterEventHandler(int, void(__stdcall *)(struct _SNETEVENT *))
+BOOL __stdcall SNetRegisterEventHandler(int,SEVTHANDLER)
 {
+//void *__stdcall SNetRegisterEventHandler(int, void(__stdcall *)(struct _SNETEVENT *))
+
 	UNIMPLEMENTED();
 }
 

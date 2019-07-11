@@ -44,6 +44,7 @@ BOOL STORMAPI SNetSendMessage(int playerID, void *data, size_t databytes)
 {
 	DUMMY();
 
+	//printf("DATA %s",std::string((char *)data, databytes));
 	snet_messages.push_back(StubMessage{playerID, std::string((char *)data, databytes)});
 	return TRUE;
 }

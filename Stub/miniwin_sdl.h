@@ -48,8 +48,8 @@ extern int totalFrames;
 extern SDL_Surface* DiabloTitle;
 extern SDL_Event input;
 
-extern int SCREEN_WIDTH;
-extern int SCREEN_HEIGHT;
+//extern int SCREEN_WIDTH;
+//extern int SCREEN_HEIGHT;
 extern int TotalPlayers;
 
 
@@ -65,16 +65,16 @@ extern SDL_Rect ShowCreditsBox;
 extern SDL_Rect ExitBox;
 
 //
-
+typedef unsigned char BYTE;
 //CEL Gobals ?? Doesn't work?
-extern void *BigTGold_cel;
+//extern void *BigTGold_cel;
 extern void * pTitlqtxtCel;
-extern void * pDiabfrCel ;
-extern void *BigTGold_cel;
+extern BYTE * sgpLogo ;
+//extern void *BigTGold_cel;
 extern int gdwLogoWidth;
 extern int gdwLogoHeight;
 extern void *pPcxLogoImage;
-extern void *pPanelText;
+//extern void *pPanelText;
 extern void * pTitlgrayCel_sgpBackCel;
 extern int gdwTitleWidth;
 extern int gdwTitleHeight;
@@ -88,7 +88,7 @@ extern void * pPcxHeroImage;
 extern int gdwSHeroHeight;
 extern int gdwSHeroWidth;
 extern void * pPcxSHeroImage;
-extern void * pMedTextCels;
+//extern void * pMedTextCels;
 
 extern void * pPcxGameImage;
 extern void * pPcxCreditsImage;
@@ -141,6 +141,7 @@ void LoadHeroStats();
 void RenderDefaultStats(int HeroChosen);
 void DrawPreGameOptions(int image , int ShowClasses);
 void DrawPreGameDifficultySelection(int image, int ShowClasses);
+void sdl_present_surface();
 
 
 typedef unsigned char BYTE;

@@ -5,18 +5,9 @@
 #include <iostream>
 #include <utility>
 
-/*
-#ifndef NO_GLOBALS
-char gbSndInited;
-char gbDupSounds;
-UCHAR gbMusicOn;
-UCHAR gbSoundOn;
-#endif
-*/
+
 
 bool SoundInited;
-char gbSndInited;
-char gbDupSounds;
 unsigned char channels = 8;
 // defines how many channels, respectively how many *.wav files can be played at the same time
 
@@ -30,7 +21,7 @@ Mix_Music *music;
 char *sgszMusicTracks[6] = {"Music\\DTowne.wav", "Music\\DLvlA.wav", "Music\\DLvlB.wav",
                             "Music\\DLvlC.wav",  "Music\\DLvlD.wav", "Music\\Dintro.wav"};
 
-void __fastcall snd_init(HWND hWnd)
+void  snd_init(HWND hWnd)
 {
 
 	DUMMY();
@@ -39,15 +30,11 @@ void __fastcall snd_init(HWND hWnd)
 	// Initialize SDL.
 	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
 		printf("ERROR : %s\n\n", SDL_GetError());
-		FILE *file = fopen("/sdcard/Diablo/hello.txt", "w+");
 
-		fputs("SOUND FAILED TO INIT!\n", file);
-		fflush(file);
-		fclose(file);
 	}
 
 	/* following function Mix_AllocateChannels allocates the number of channels of simultaneously played sounds.*/
-	printf("Opened %i sound channels\n\n", Mix_AllocateChannels(channels));
+	//printf("Opened %i sound channels\n\n", Mix_AllocateChannels(channels));
 	/* for example following possible channels:
 	1. music is playing
 	2. walking at the same time (walking sound)
@@ -100,7 +87,6 @@ void fill_audio(void *udata, Uint8 *stream, int len)
 
 
 
-#include <android/log.h>
 
 
 
@@ -109,7 +95,8 @@ void fill_audio(void *udata, Uint8 *stream, int len)
 
 
 
-void __fastcall music_start(int nTrack)
+
+void  music_start(int nTrack)
 {
 	// DUMMY();
 	// wanted.freq = 44100; //seems not to be used at this time
@@ -158,8 +145,8 @@ void __fastcall music_start(int nTrack)
 
 		// Mix_PlayMusic(Song, -1);
 		if (Mix_PlayMusic(sample, -1) == -1) {
-
-            __android_log_print(ANDROID_LOG_VERBOSE, "DEBUGMSG", Mix_GetError(), 1);
+//
+  //          __android_log_print(ANDROID_LOG_VERBOSE, "DEBUGMSG", Mix_GetError(), 1);
 
             printf("Mix_PlayMusic: %s\n", Mix_GetError());
 			// well, there's no music, but most games don't break without music...
@@ -198,7 +185,7 @@ void __cdecl music_stop()
 	Mix_HaltChannel(-1);
 }
 
-BOOL __fastcall snd_playing(TSnd *pSnd)
+BOOL  snd_playing(TSnd *pSnd)
 {
 
 	printf("snd_playing \n");
@@ -207,20 +194,20 @@ BOOL __fastcall snd_playing(TSnd *pSnd)
 }
 
 //
-void __fastcall snd_play_snd(TSnd *pSnd, int lVolume, int lPan)
+void  snd_play_snd(TSnd *pSnd, int lVolume, int lPan)
 {
 
 	Mix_PlayChannel(-1, (Mix_Chunk *)pSnd, 0);
 }
 
-void __fastcall snd_stop_snd(TSnd *pSnd)
+void  snd_stop_snd(TSnd *pSnd)
 {
 	DUMMY();
 	Mix_HaltMusic();
 }
 
 void *MSFXBuffer;
-TSnd *__fastcall sound_file_load(char *path)
+TSnd * sound_file_load(char *path)
 {
 
 	int bytestoread;
@@ -237,30 +224,30 @@ TSnd *__fastcall sound_file_load(char *path)
 	SDL_RWops *rw = SDL_RWFromMem(MSFXBuffer, bytestoread);
 	Mix_Chunk *SoundFX = Mix_LoadWAV_RW(rw, 1);
 
+	//return (TSnd *)SoundFX;
 	return (TSnd *)SoundFX;
-
 	//	printf("Sound_File_Load %s\n", path);
 	// UNIMPLEMENTED();
 }
 
-void __fastcall sound_file_cleanup(TSnd *sound_file)
+void  sound_file_cleanup(TSnd *sound_file)
 {
 	UNIMPLEMENTED();
 }
 
-int __fastcall sound_get_or_set_sound_volume(int volume)
+int  sound_get_or_set_sound_volume(int volume)
 {
 	DUMMY_PRINT("volume: %d", volume);
 	return volume;
 }
 
-int __fastcall sound_get_or_set_music_volume(int volume)
+int  sound_get_or_set_music_volume(int volume)
 {
 	DUMMY_PRINT("volume: %d", volume);
 	return volume;
 }
 
-void __fastcall snd_update(BOOL bStopAll)
+void  snd_update(BOOL bStopAll)
 {
 
 	// DUMMY_PRINT("stopall: %d", bStopAll);

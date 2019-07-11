@@ -4,6 +4,12 @@
 #include "../types.h"
 #include "stubs.h"
 
+//Additional vars
+//char infostr[MAX_PATH];
+
+//end
+
+
 #ifndef NO_GLOBALS
 void *diabdat_mpq;
 void *patch_rt_mpq;
@@ -59,7 +65,7 @@ static std::string find_file_in_std_directories(const char *file)
 	TermMsg("Required file %s not found", file);
 }
 
-void __fastcall init_create_window(int nCmdShow)
+void  init_create_window(int nCmdShow)
 {
 	DUMMY();
 
@@ -83,7 +89,7 @@ LRESULT __stdcall MainWndProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	UNIMPLEMENTED();
 }
 
-WNDPROC __fastcall SetWindowProc(WNDPROC NewProc)
+WNDPROC  SetWindowProc(WNDPROC NewProc)
 {
 	WNDPROC OldProc = CurrentProc;
 	CurrentProc = NewProc;
@@ -95,13 +101,13 @@ void __cdecl init_archives()
 	DUMMY();
 
 	SFileOpenArchive("/sdcard/Diablo/diabdat.mpq", 1000, 0, &diabdat_mpq);
-	//assert(diabdat_mpq);
+	assert(diabdat_mpq);
 
 	SFileOpenArchive("/sdcard/Diablo/Diablo/patch_rt.mpq", 1000, 0, &patch_rt_mpq);
 	//assert(patch_rt_mpq);
 	// I don' think this works, like I would intend.
 	SFileOpenArchive("/sdcard/Diablo/prealpha.mpq", 1000, 0, &prealpha_mpq);
-	//assert(prealpha_mpq);
+	assert(prealpha_mpq);
 }
 
 void __cdecl init_get_file_info()
@@ -128,7 +134,7 @@ void LoadCharNamesintoMemory(int start, int end)
 				strcpy(p_hero_names, pkplr.pName);
 				printf("Player Strength %d\n", (int)pkplr.pBaseStr);
 				UnPackPlayer(&pkplr, 0, 0); // Seg FAULT?
-				pfile_archive_contains_game(CharFile);
+				pfile_archive_contains_game(CharFile, 0); // change 0 is unused appearntly.
 			}
 			pfile_SFileCloseArchive(CharFile);
 		}
@@ -180,13 +186,31 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 	// LoadPalette("gendata\\delchar.pal"); // Uncomenting this fixes the the PCXs...
 	LoadPalette("Gendata\\Title.pal");
 
+		SDL_Rect CreateHeroCancelBox;
+		CreateHeroCancelBox.y = 435;
+		CreateHeroCancelBox.x = 530;
+		CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+		CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+
+
+
+
+		SDL_Rect ClickOkBox;
+		ClickOkBox.y = 425;
+		ClickOkBox.x = 435;
+		ClickOkBox.w = ClickOkBox.x + 40;
+		ClickOkBox.h = ClickOkBox.y + 40;
+
+
+
+
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
 
 	// static std::deque<MSG> message_queue;
 
 	while (1 && quit == false) {
-		DrawMouse();
-		PaletteFadeIn(32);
+		//DrawMouse();
+		PaletteFadeIn(8);
 
 		if (menu == 0) {
 			SDL_RenderDiabloMainPage();
@@ -300,7 +324,7 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 
 					if (menu == 0) {
 
-						int ClickListStart = 230;
+						int ClickListStart = 175;
 						int sizeOfBox = 72;
 						int WidthOfBox = 430;
 						int ClickListEnd = 343;
@@ -336,25 +360,25 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 					if (menu == 2) { // Yes, I know. Skipped 1 and I going to hell for it.
 						//	int x = 440;
 						//	int y = 430;
-						int ClickListStart = 315;
+						int ClickListStart = 195;
 						int sizeOfBox = 30;
 						int WidthOfBox = 400;
 						int ClickListEnd = 343;
 
-						int CreateHeroY = 555;
-						int CreateHeroX = 305;
+						int CreateHeroY = 434;
+						int CreateHeroX = 235;
 
-						SDL_Rect CreateHeroCancelBox;
-						CreateHeroCancelBox.y = 550;
-						CreateHeroCancelBox.x = 675;
-						CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
-						CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+						//SDL_Rect CreateHeroCancelBox;
+						//CreateHeroCancelBox.y = 550;
+						//CreateHeroCancelBox.x = 675;
+						//CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+						//CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
 
 						// Render Clicks
 						if (TotalPlayers >= 1 && (x > ClickListStart) && (y > ClickListStart) &&
 						    (x < ClickListStart + WidthOfBox) && (y < ClickListStart + sizeOfBox)) { // MultiBox clicked
-							strcpy(chr_name_str, hero_names[0]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[0]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							// break;
 						}
@@ -363,8 +387,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						    (x < ClickListStart + WidthOfBox) &&
 						    (y < ClickListStart + (sizeOfBox) + sizeOfBox)) { // MultiBox clicked
 							printf("Player 2 Diablo\n");
-							strcpy(chr_name_str, hero_names[1]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[1]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							//	break;
 						}
@@ -373,8 +397,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						    (x < ClickListStart + WidthOfBox) &&
 						    (y < ClickListStart + (sizeOfBox * 2) + sizeOfBox)) { // MultiBox clicked
 							printf("Player 3 Diablo\n");
-							strcpy(chr_name_str, hero_names[2]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[2]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							//	break;
 						}
@@ -384,8 +408,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						    (y < ClickListStart + (sizeOfBox * 3) + sizeOfBox)) { // MultiBox clicked
 							printf("Player 4 Diablo\n");
 							effects_play_sound("Sfx\\Items\\Titlslct.wav");
-							strcpy(chr_name_str, hero_names[3]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[3]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							//	break;
 						}
@@ -395,8 +419,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						    (y < ClickListStart + (sizeOfBox * 4) + sizeOfBox)) { // MultiBox clicked
 							printf("Player 5 Diablo\n");
 							effects_play_sound("Sfx\\Items\\Titlslct.wav");
-							strcpy(chr_name_str, hero_names[4]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[4]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							//	break;
 						}
@@ -406,8 +430,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						    (y < ClickListStart + (sizeOfBox * 5) + sizeOfBox)) { // MultiBox clicked
 							printf("Player 6 Diablo\n");
 							effects_play_sound("Sfx\\Items\\Titlslct.wav");
-							strcpy(chr_name_str, hero_names[5]);
-							printf("Player %s\n", chr_name_str);
+							strcpy(infostr, hero_names[5]);
+							printf("Player %s\n", infostr);
 							menu = 5;
 							//	break;
 						}
@@ -437,6 +461,8 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						int RogueSelectBoxY = 392;
 						int SorcerorSelectBoxX = 383;
 						int SorcerorSelectBoxY = 365;
+
+						
 						int CreateHeroOkBoxX = 330;
 						int CreateHeroOkBoxY = 441;
 						int CreateHeroCanBBoxX = 445;
@@ -446,30 +472,37 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						// int y = 430;
 
 						SDL_Rect WarriorSelectBox;
-						WarriorSelectBox.y = 350;
-						WarriorSelectBox.x = 280;
+						WarriorSelectBox.y = 260;
+						WarriorSelectBox.x = 220;
 						WarriorSelectBox.w = WarriorSelectBox.x + 100;
-						WarriorSelectBox.h = WarriorSelectBox.y + 30;
+						WarriorSelectBox.h = WarriorSelectBox.y + 50;
 
 						SDL_Rect RogueSelectBox;
-						RogueSelectBox.y = 392;
-						RogueSelectBox.x = 280;
+						RogueSelectBox.y = 310;
+						RogueSelectBox.x = 220;
 						RogueSelectBox.w = RogueSelectBox.x + 100;
 						RogueSelectBox.h = RogueSelectBox.y + 30;
 						// X450 Y 392 ;
 
 						SDL_Rect SorcerorSelectBox;
-						SorcerorSelectBox.y = 428;
-						SorcerorSelectBox.x = 280;
+						SorcerorSelectBox.y = 360;
+						SorcerorSelectBox.x = 220;
 						SorcerorSelectBox.w = SorcerorSelectBox.x + 100;
 						SorcerorSelectBox.h = SorcerorSelectBox.y + 30;
 						// X 447 Y 428
 
-						SDL_Rect CreateHeroCancelBox;
-						CreateHeroCancelBox.y = 550;
-						CreateHeroCancelBox.x = 675;
-						CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
-						CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+						/**
+						
+							
+
+						 */
+
+
+						// SDL_Rect CreateHeroCancelBox;
+						// CreateHeroCancelBox.y = 550;
+						// CreateHeroCancelBox.x = 675;
+						// CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+						// CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
 
 						if ((x > WarriorSelectBox.x) && (y > WarriorSelectBox.y) && (x < WarriorSelectBox.w) &&
 						    (y < WarriorSelectBox.h)) {
@@ -505,18 +538,20 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 					}
 					if (menu == 4) {
 						printf("sozdat geroya");
-						SDL_Rect CreateHeroCancelBox;
-						CreateHeroCancelBox.y = 550;
-						CreateHeroCancelBox.x = 675;
-						CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
-						CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+						//SDL_Rect CreateHeroCancelBox;
+					
+						// CreateHeroCancelBox.y = 550;
+						// CreateHeroCancelBox.x = 675;
+						// CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+						// CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+
 
 						// X 549 , Y 551
-						SDL_Rect ClickOkBox;
-						ClickOkBox.y = 550;
-						ClickOkBox.x = 550;
-						ClickOkBox.w = ClickOkBox.x + 30;
-						ClickOkBox.h = ClickOkBox.y + 30;
+						// SDL_Rect ClickOkBox;
+						// ClickOkBox.y = 435;
+						// ClickOkBox.x = 235;
+						// ClickOkBox.w = ClickOkBox.x + 40;
+						// ClickOkBox.h = ClickOkBox.y + 40;
 
 						if ((x > CreateHeroCancelBox.x) && (y > CreateHeroCancelBox.y) && (x < CreateHeroCancelBox.w) &&
 						    (y < CreateHeroCancelBox.h)) {
@@ -565,11 +600,11 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						SorcerorSelectBox.h = SorcerorSelectBox.y + 30;
 						// X 447 Y 428
 
-						SDL_Rect CreateHeroCancelBox;
-						CreateHeroCancelBox.y = 550;
-						CreateHeroCancelBox.x = 675;
-						CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
-						CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+						// SDL_Rect CreateHeroCancelBox;
+						// CreateHeroCancelBox.y = 550;
+						// CreateHeroCancelBox.x = 675;
+						// CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+						// CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
 
 						if ((x > NewGameBox.x) && (y > NewGameBox.y) && (x < NewGameBox.w) && (y < NewGameBox.h)) {
 
@@ -625,11 +660,11 @@ void SDL_Diablo_UI() // I anticipate to move this later.
 						HellSelectBox.h = HellSelectBox.y + 30;
 						// X 447 Y 428
 
-						SDL_Rect CreateHeroCancelBox;
-						CreateHeroCancelBox.y = 550;
-						CreateHeroCancelBox.x = 675;
-						CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
-						CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
+						// SDL_Rect CreateHeroCancelBox;
+						// CreateHeroCancelBox.y = 550;
+						// CreateHeroCancelBox.x = 675;
+						// CreateHeroCancelBox.w = CreateHeroCancelBox.x + 100;
+						// CreateHeroCancelBox.h = CreateHeroCancelBox.y + 30;
 
 						if ((x > NormalSelectBox.x) && (y > NormalSelectBox.y) && (x < NormalSelectBox.w) &&
 						    (y < NormalSelectBox.h)) {

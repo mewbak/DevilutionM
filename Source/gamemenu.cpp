@@ -1,316 +1,310 @@
-//HEADER_GOES_HERE
-
+//#include "diablo.h"
 #include "../types.h"
 
-TMenuItem sgSingleMenu[6] =
-{
-  { 0x80000000, "Save Game", &gamemenu_save_game },
-  { 0x80000000, "Options", &gamemenu_options },
-  { 0x80000000, "New Game", &gamemenu_new_game },
-  { 0x80000000, "Load Game", &gamemenu_load_game },
-  { 0x80000000, "Quit Diablo", &gamemenu_quit_game },
-  { 0x80000000, NULL, NULL }
+TMenuItem sgSingleMenu[6] = {
+	// clang-format off
+	//   dwFlags, pszStr,        fnMenu
+	{ GMENU_ENABLED, "Save Game",   &gamemenu_save_game },
+	{ GMENU_ENABLED, "Options",     &gamemenu_options   },
+	{ GMENU_ENABLED, "New Game",    &gamemenu_new_game  },
+	{ GMENU_ENABLED, "Load Game",   &gamemenu_load_game },
+	{ GMENU_ENABLED, "Quit Diablo", &gamemenu_quit_game },
+	{ GMENU_ENABLED, NULL, NULL }
+	// clang-format on
 };
-TMenuItem sgMultiMenu[5] =
-{
-  { 0x80000000, "Options", &gamemenu_options },
-  { 0x80000000, "New Game", &gamemenu_new_game },
-  { 0x80000000, "Restart In Town", &gamemenu_restart_town },
-  { 0x80000000, "Quit Diablo", &gamemenu_quit_game },
-  { 0x80000000, NULL, NULL }
+TMenuItem sgMultiMenu[5] = {
+	// clang-format off
+	//   dwFlags, pszStr,            fnMenu
+	{ GMENU_ENABLED, "Options",         &gamemenu_options      },
+	{ GMENU_ENABLED, "New Game",        &gamemenu_new_game     },
+	{ GMENU_ENABLED, "Restart In Town", &gamemenu_restart_town },
+	{ GMENU_ENABLED, "Quit Diablo",     &gamemenu_quit_game    },
+	{ GMENU_ENABLED, NULL,              NULL                   }
+	// clang-format on
 };
-TMenuItem sgOptionMenu[6] =
-{
-  { 0xC0000000, NULL, (void (__cdecl *)(void))&gamemenu_music_volume },
-  { 0xC0000000, NULL, (void (__cdecl *)(void))&gamemenu_sound_volume },
-  { 0xC0000000, "Gamma", (void (__cdecl *)(void))&gamemenu_gamma },
-  { 0x80000000, NULL, &gamemenu_color_cycling },
-  { 0x80000000, "Previous Menu", &gamemenu_previous },
-  { 0x80000000, NULL, NULL }
+TMenuItem sgOptionMenu[6] = {
+	// clang-format off
+	//                     dwFlags, pszStr,          fnMenu
+	{ GMENU_ENABLED | GMENU_SLIDER, NULL,            &gamemenu_music_volume  },
+	{ GMENU_ENABLED | GMENU_SLIDER, NULL,            &gamemenu_sound_volume  },
+	{ GMENU_ENABLED | GMENU_SLIDER, "Gamma",         &gamemenu_gamma         },
+	{ GMENU_ENABLED               , NULL,            &gamemenu_color_cycling },
+	{ GMENU_ENABLED               , "Previous Menu", &j_gamemenu_previous    },
+	{ GMENU_ENABLED               , NULL,            NULL                    }
+	// clang-format on
 };
 char *music_toggle_names[] = { "Music", "Music Disabled" };
 char *sound_toggle_names[] = { "Sound", "Sound Disabled" };
 char *color_cycling_toggle_names[] = { "Color Cycling Off", "Color Cycling On" };
 
-void __cdecl gamemenu_previous()
+void gamemenu_previous()
 {
-	void (__cdecl *v0)(); // edx
-	TMenuItem *v1; // ecx
+	void (*proc)(TMenuItem *);
+	TMenuItem *item;
 
-	if ( gbMaxPlayers == 1 )
-	{
-		v0 = gamemenu_enable_single;
-		v1 = sgSingleMenu;
+	if (gbMaxPlayers == 1) {
+		proc = gamemenu_enable_single;
+		item = sgSingleMenu;
+	} else {
+		proc = gamemenu_enable_multi;
+		item = sgMultiMenu;
 	}
-	else
-	{
-		v0 = gamemenu_enable_multi;
-		v1 = sgMultiMenu;
-	}
-	gmenu_call_proc(v1, v0);
+	gmenu_call_proc(item, proc);
 	PressEscKey();
 }
-// 679660: using guessed type char gbMaxPlayers;
 
-void __cdecl gamemenu_enable_single()
+void gamemenu_enable_single(TMenuItem *pMenuItems)
 {
-	bool v0; // dl
+	BOOL enable;
 
 	gmenu_enable(&sgSingleMenu[3], gbValidSaveFile);
-	v0 = 0;
-	if ( plr[myplr]._pmode != PM_DEATH && !deathflag )
-		v0 = 1;
-	gmenu_enable(sgSingleMenu, v0);
+
+	enable = FALSE;
+	if (plr[myplr]._pmode != PM_DEATH && !deathflag)
+		enable = TRUE;
+
+	gmenu_enable(sgSingleMenu, enable);
 }
 
-void __cdecl gamemenu_enable_multi()
+void gamemenu_enable_multi(TMenuItem *pMenuItems)
 {
 	gmenu_enable(&sgMultiMenu[2], deathflag);
 }
 
-void __cdecl gamemenu_off()
+void gamemenu_off()
 {
-	gmenu_call_proc(0, 0);
+	gmenu_call_proc(0, NULL);
 }
 
-void __cdecl gamemenu_handle_previous()
+void gamemenu_handle_previous()
 {
-	if ( gmenu_exception() )
+	if (gmenu_exception())
 		gamemenu_off();
 	else
 		gamemenu_previous();
 }
 
-void __cdecl gamemenu_new_game()
+void j_gamemenu_previous(BOOL bActivate)
 {
-	int i; // eax
+	gamemenu_previous();
+}
 
-	for(i = 0; i < 4; i++)
-	{
+void gamemenu_new_game(BOOL bActivate)
+{
+	int i;
+
+	for (i = 0; i < MAX_PLRS; i++) {
 		plr[i]._pmode = PM_QUIT;
-		plr[i]._pInvincible = 1;
+		plr[i]._pInvincible = TRUE;
 	}
 
-	deathflag = 0;
+	deathflag = FALSE;
 	drawpanflag = 255;
-	scrollrt_draw_game_screen(1);
-	gbRunGame = 0;
+	scrollrt_draw_game_screen(TRUE);
+	gbRunGame = FALSE;
 	gamemenu_off();
 }
-// 525650: using guessed type int gbRunGame;
-// 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_quit_game()
+void gamemenu_quit_game(BOOL bActivate)
 {
-	gamemenu_new_game();
-	gbRunGameResult = 0;
+	gamemenu_new_game(bActivate);
+	gbRunGameResult = FALSE;
 }
-// 525698: using guessed type int gbRunGameResult;
 
-void __cdecl gamemenu_load_game()
+void gamemenu_load_game(BOOL bActivate)
 {
-	WNDPROC saveProc; // edi
-
-	saveProc = SetWindowProc(DisableInputWndProc);
+	WNDPROC saveProc = SetWindowProc(DisableInputWndProc);
 	gamemenu_off();
-	SetCursor(0);
-	InitDiabloMsg(10);
+	SetCursor_(CURSOR_NONE);
+	InitDiabloMsg(EMSG_LOADING);
 	drawpanflag = 255;
 	DrawAndBlit();
 	LoadGame(FALSE);
 	ClrDiabloMsg();
 	PaletteFadeOut(8);
-	deathflag = 0;
+	deathflag = FALSE;
 	drawpanflag = 255;
 	DrawAndBlit();
 	PaletteFadeIn(8);
-	SetCursor(CURSOR_HAND);
+	SetCursor_(CURSOR_HAND);
 	interface_msg_pump();
 	SetWindowProc(saveProc);
 }
-// 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_save_game()
+void gamemenu_save_game(BOOL bActivate)
 {
-	WNDPROC saveProc; // edi
-
-	if ( pcurs == CURSOR_HAND )
-	{
-		if ( plr[myplr]._pmode == PM_DEATH || deathflag )
-		{
-			gamemenu_off();
-		}
-		else
-		{
-			saveProc = SetWindowProc(DisableInputWndProc);
-			SetCursor(0);
-			gamemenu_off();
-			InitDiabloMsg(11);
-			drawpanflag = 255;
-			DrawAndBlit();
-			SaveGame();
-			ClrDiabloMsg();
-			drawpanflag = 255;
-			SetCursor(CURSOR_HAND);
-			interface_msg_pump();
-			SetWindowProc(saveProc);
-		}
+	if (pcurs != CURSOR_HAND) {
+		return;
 	}
-}
-// 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_restart_town()
+	if (plr[myplr]._pmode == PM_DEATH || deathflag) {
+		gamemenu_off();
+		return;
+	}
+
+	WNDPROC saveProc = SetWindowProc(DisableInputWndProc);
+	SetCursor_(CURSOR_NONE);
+	gamemenu_off();
+	InitDiabloMsg(EMSG_SAVING);
+	drawpanflag = 255;
+	DrawAndBlit();
+	SaveGame();
+	ClrDiabloMsg();
+	drawpanflag = 255;
+	SetCursor_(CURSOR_HAND);
+	interface_msg_pump();
+	SetWindowProc(saveProc);
+}
+
+void gamemenu_restart_town(BOOL bActivate)
 {
-	NetSendCmd(1u, CMD_RETOWN);
+	NetSendCmd(TRUE, CMD_RETOWN);
 }
 
-void __cdecl gamemenu_options()
+void gamemenu_options(BOOL bActivate)
 {
 	gamemenu_get_music();
 	gamemenu_get_sound();
 	gamemenu_get_gamma();
 	gamemenu_get_color_cycling();
-	gmenu_call_proc(sgOptionMenu, 0);
+	gmenu_call_proc(sgOptionMenu, NULL);
 }
 
-void __cdecl gamemenu_get_music()
+void gamemenu_get_music()
 {
 	gamemenu_sound_music_toggle(music_toggle_names, sgOptionMenu, sound_get_or_set_music_volume(1));
 }
 
-void __fastcall gamemenu_sound_music_toggle(char **names, TMenuItem *menu_item, int gamma)
+void gamemenu_sound_music_toggle(char **names, TMenuItem *menu_item, int volume)
 {
-	if ( gbSndInited )
-	{
-		menu_item->dwFlags |= 0xC0000000;
+	if (gbSndInited) {
+		menu_item->dwFlags |= GMENU_ENABLED | GMENU_SLIDER;
 		menu_item->pszStr = *names;
-		gmenu_slider_3(menu_item, 17);
-		gmenu_slider_1(menu_item, VOLUME_MIN, VOLUME_MAX, gamma);
+		gmenu_slider_steps(menu_item, 17);
+		gmenu_slider_set(menu_item, VOLUME_MIN, VOLUME_MAX, volume);
+		return;
 	}
-	else
-	{
-		menu_item->dwFlags &= 0x3F000000;
-		menu_item->pszStr = names[1];
-	}
+
+	menu_item->dwFlags &= ~(GMENU_ENABLED | GMENU_SLIDER);
+	menu_item->pszStr = names[1];
 }
 
-void __cdecl gamemenu_get_sound()
+void gamemenu_get_sound()
 {
 	gamemenu_sound_music_toggle(sound_toggle_names, &sgOptionMenu[1], sound_get_or_set_sound_volume(1));
 }
 
-void __cdecl gamemenu_get_color_cycling()
+void gamemenu_get_color_cycling()
 {
-	sgOptionMenu[3].pszStr = color_cycling_toggle_names[palette_get_colour_cycling()];
+	sgOptionMenu[3].pszStr = color_cycling_toggle_names[palette_get_colour_cycling() & 1];
 }
 
-void __cdecl gamemenu_get_gamma()
+void gamemenu_get_gamma()
 {
-	gmenu_slider_3(&sgOptionMenu[2], 15);
-	gmenu_slider_1(&sgOptionMenu[2], 30, 100, UpdateGamma(0));
+	gmenu_slider_steps(&sgOptionMenu[2], 15);
+	gmenu_slider_set(&sgOptionMenu[2], 30, 100, UpdateGamma(0));
 }
 
-void __fastcall gamemenu_music_volume(int a1)
+void gamemenu_music_volume(BOOL bActivate)
 {
-	int v1; // esi
-
-	if ( a1 )
-	{
-		if ( gbMusicOn )
-		{
-			gbMusicOn = 0;
+	int volume;
+	if (bActivate) {
+		if (gbMusicOn) {
+			gbMusicOn = FALSE;
 			music_stop();
 			sound_get_or_set_music_volume(VOLUME_MIN);
-			goto LABEL_11;
+			gamemenu_get_music();
+			return;
 		}
-		gbMusicOn = 1;
+		gbMusicOn = TRUE;
 		sound_get_or_set_music_volume(VOLUME_MAX);
-LABEL_10:
-		music_start((unsigned char)leveltype);
-		goto LABEL_11;
+		music_start(leveltype);
+		gamemenu_get_music();
+		return;
 	}
-	v1 = gamemenu_slider_music_sound(sgOptionMenu);
-	sound_get_or_set_music_volume(v1);
-	if ( v1 != VOLUME_MIN )
-	{
-		if ( gbMusicOn )
-			goto LABEL_11;
-		gbMusicOn = 1;
-		goto LABEL_10;
+
+	volume = gamemenu_slider_music_sound(sgOptionMenu);
+	sound_get_or_set_music_volume(volume);
+
+	if (volume == VOLUME_MIN) {
+
+		if (gbMusicOn) {
+			gbMusicOn = FALSE;
+			music_stop();
+		}
+
+		gamemenu_get_music();
+		return;
 	}
-	if ( gbMusicOn )
-	{
-		gbMusicOn = 0;
-		music_stop();
+
+	if (gbMusicOn) {
+		gamemenu_get_music();
+		return;
 	}
-LABEL_11:
+
+	gbMusicOn = TRUE;
+	music_start(leveltype);
 	gamemenu_get_music();
 }
-// 4A22D4: using guessed type char gbMusicOn;
-// 5BB1ED: using guessed type char leveltype;
 
-int __fastcall gamemenu_slider_music_sound(TMenuItem *menu_item)
+int gamemenu_slider_music_sound(TMenuItem *menu_item)
 {
 	return gmenu_slider_get(menu_item, VOLUME_MIN, VOLUME_MAX);
 }
 
-void __fastcall gamemenu_sound_volume(int a1)
+void gamemenu_sound_volume(BOOL bActivate)
 {
-	int v1; // ecx
-	int v2; // esi
-
-	if ( a1 ) {
-		if ( gbSoundOn ) {
-			gbSoundOn = 0;
+	int volume;
+	if (bActivate) {
+		if (gbSoundOn) {
+			gbSoundOn = FALSE;
 			FreeMonsterSnd();
-			v1 = VOLUME_MIN;
+			sound_get_or_set_sound_volume(VOLUME_MIN);
 		} else {
-			gbSoundOn = 1;
+			gbSoundOn = TRUE;
+			sound_get_or_set_sound_volume(VOLUME_MAX);
 		}
-		sound_get_or_set_sound_volume(VOLUME_MAX);
 	} else {
-		v2 = gamemenu_slider_music_sound(&sgOptionMenu[1]);
-		sound_get_or_set_sound_volume(v2);
-		if ( v2 == VOLUME_MIN ) {
-			if ( gbSoundOn ) {
-				gbSoundOn = 0;
+		volume = gamemenu_slider_music_sound(&sgOptionMenu[1]);
+		sound_get_or_set_sound_volume(volume);
+		if (volume == VOLUME_MIN) {
+			if (gbSoundOn) {
+				gbSoundOn = FALSE;
 				FreeMonsterSnd();
 			}
-		} else if ( !gbSoundOn ) {
-			gbSoundOn = 1;
+		} else if (!gbSoundOn) {
+			gbSoundOn = TRUE;
 		}
 	}
 	PlaySFX(IS_TITLEMOV);
 	gamemenu_get_sound();
 }
-// 4A22D5: using guessed type char gbSoundOn;
 
-void __fastcall gamemenu_gamma(int a1)
+void gamemenu_gamma(BOOL bActivate)
 {
-	int v1; // eax
-	int v2; // eax
+	int gamma;
+	if (bActivate) {
+		if (UpdateGamma(0) == 30)
+			gamma = 100;
+		else
+			gamma = 30;
+	} else {
+		gamma = gamemenu_slider_gamma();
+	}
 
-	if ( a1 )
-	{
-		v1 = -(UpdateGamma(0) != 30);
-		_LOBYTE(v1) = v1 & 0xBA;
-		v2 = v1 + 100;
-	}
-	else
-	{
-		v2 = gamemenu_slider_gamma();
-	}
-	UpdateGamma(v2);
+	UpdateGamma(gamma);
 	gamemenu_get_gamma();
 }
 
-int __cdecl gamemenu_slider_gamma()
+int gamemenu_slider_gamma()
 {
 	return gmenu_slider_get(&sgOptionMenu[2], 30, 100);
 }
 
-void __cdecl gamemenu_color_cycling()
+void gamemenu_color_cycling(BOOL bActivate)
 {
-	palette_set_color_cycling(palette_get_colour_cycling() == 0);
-	sgOptionMenu[3].pszStr = color_cycling_toggle_names[palette_get_colour_cycling() & 1];
+	BOOL color_cycling;
+
+	color_cycling = palette_set_color_cycling(palette_get_colour_cycling() == 0);
+	sgOptionMenu[3].pszStr = color_cycling_toggle_names[color_cycling & 1];
 }

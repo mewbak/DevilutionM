@@ -34,10 +34,11 @@ HANDLE WINAPI CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShar
 	} else if (dwCreationDisposition == CREATE_ALWAYS) {
 		flags |= O_CREAT | O_TRUNC;
 	} else {
+	
 		UNIMPLEMENTED();
 	}
 	int fd = open(name, flags, mode);
-
+	DUMMY();
 	return (HANDLE)fd;
 }
 

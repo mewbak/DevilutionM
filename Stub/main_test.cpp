@@ -4,7 +4,7 @@
 
 #include <stddef.h>
 
-static_assert(sizeof(plr) == 0x15360u, "sizeof(PlayerStruct) is wrong");
+//static_assert(sizeof(plr) == 0x15360u, "sizeof(PlayerStruct) is wrong");
 
 extern "C" {
 const char *__asan_default_options()

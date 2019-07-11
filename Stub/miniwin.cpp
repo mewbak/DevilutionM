@@ -108,7 +108,7 @@ HFILE WINAPI OpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle)
 
 VOID WINAPI InitializeCriticalSection(LPCRITICAL_SECTION lpCriticalSection)
 {
-	UNIMPLEMENTED();
+	DUMMY();
 }
 
 VOID WINAPI EnterCriticalSection(LPCRITICAL_SECTION lpCriticalSection)
@@ -292,4 +292,9 @@ DWORD WINAPI GetPrivateProfileStringA(LPCSTR lpAppName, LPCSTR lpKeyName, LPCSTR
                                       DWORD nSize, LPCSTR lpFileName)
 {
 	UNIMPLEMENTED();
-}
+}/** @file
+ * Perform some basic compile-time validation to make sure things line up.
+ */
+#include "../types.h"
+//Change probably no longer needed.
+//static_assert(sizeof(plr) == 0x15360u, "sizeof(PlayerStruct) is wrong");

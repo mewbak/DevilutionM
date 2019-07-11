@@ -40,11 +40,6 @@ public class HelloSDL2Activity extends SDLActivity
 
     //   android.os.Debug.waitForDebugger();
 
-
-
-
-
-
 	 return new String[]{
                 "SDL2",
                 "SDL2_image",

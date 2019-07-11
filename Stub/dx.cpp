@@ -1,11 +1,23 @@
-#include "dx_stub.h"
+//#include "dx_stub.h"
 #include "miniwin_sdl.h"
 
 #include "../types.h"
 #include "stubs.h"
 
+
+
+//additional Vars
+int sgdwLockCount;
+static CCritSect sgMemCrit;
+BYTE *sgpBackBuf;
+
+//End
+
+
+
+
 #ifndef NO_GLOBALS
-Screen *gpBuffer;
+//Screen *gpBuffer;
 
 IDirectDraw *lpDDInterface;
 IDirectDrawSurface *lpDDSPrimary;
@@ -28,6 +40,7 @@ SDL_Surface *pal_surface;
 /** Currently active palette */
 SDL_Palette *palette;
 
+
 /**
  * Is #sdl_pal_surface dirty?
  *
@@ -41,7 +54,7 @@ bool surface_dirty;
 //
 
 #define METHOD virtual __stdcall
-
+//int zfoo = 0;
 class StubSurface : public IDirectDrawSurface
 {
 	METHOD HRESULT QueryInterface(REFIID refiid, LPVOID *lpvoid) { UNIMPLEMENTED(); };
@@ -57,13 +70,37 @@ class StubSurface : public IDirectDrawSurface
 	}
 	METHOD HRESULT BltBatch(LPDDBLTBATCH lpDDBltBatch, DWORD dwCount, DWORD dwFlags) { UNIMPLEMENTED(); }
 
+
+unsigned int rand_interval(unsigned int min, unsigned int max)
+{
+    int r;
+    const unsigned int range = 1 + max - min;
+    const unsigned int buckets = RAND_MAX / range;
+    const unsigned int limit = buckets * range;
+
+    /* Create equal size buckets all in a row, then fire randomly towards
+     * the buckets until you land in one of them. All buckets are equally
+     * likely. If you land off the end of the line of buckets, try again. */
+    do
+    {
+        r = rand();
+    } while (r >= limit);
+
+    return min + (r / buckets);
+}
+
+
+
+
+
+
 	METHOD HRESULT BltFast(DWORD dwX, DWORD dwY, LPDIRECTDRAWSURFACE lpDDSrcSurface, LPRECT lpSrcRect, DWORD dwTrans)
 	{
 		DUMMY_ONCE();
+		
 
-
+		//gpBuffer = sgpBackBuf;
 		assert(lpDDSrcSurface == lpDDSBackBuf);
-
 		int w = lpSrcRect->right - lpSrcRect->left + 1;
 		int h = lpSrcRect->bottom - lpSrcRect->top + 1;
 
@@ -76,15 +113,17 @@ class StubSurface : public IDirectDrawSurface
 
 		// Convert from 8-bit to 32-bit
 
+			// int red = rand_interval(1,255);
+			// int blue = rand_interval(1,255);
+			// int green = rand_interval(1,255);
 
-		SDL_CHECK(SDL_BlitSurface(pal_surface, &src_rect, surface, &dst_rect));
+		 	// SDL_FillRect(pal_surface, NULL, SDL_MapRGB(pal_surface->format, red, blue, green));
+		 	
 
-		//char * foo = "dasdasdas";
-		//printf("I CRASH\n %s ", *foo);
-
-
-		//64 160 640 480
-		//0 0 640 480
+		// }
+	
+		// test function  -- SDL_FillRect(pal_surface, NULL, SDL_MapRGB(pal_surface->format, 255, 255, 255));
+		SDL_CHECK(SDL_BlitSurface(pal_surface, &src_rect, surface, &dst_rect));// coppies PAL SURFACE to SURFACE which is then presented.
 		surface_dirty = true;
 		return S_OK;
 
@@ -257,7 +296,7 @@ void sdl_init_video()
 	assert(palette);*/
 }
 
-void __fastcall dx_init(HWND hWnd)
+void  dx_init(HWND hWnd)
 {
 	DUMMY();
 
@@ -281,8 +320,8 @@ void sdl_update_entire_surface()
 }
 
 void sdl_present_surface()
-{
-	assert(!SDL_MUSTLOCK(surface));
+{	
+	//assert(!SDL_MUSTLOCK(surface));
 	SDL_CHECK(SDL_UpdateTexture(texture, NULL, surface->pixels, surface->pitch));//pitch is 2560
 
 	SDL_CHECK(SDL_RenderCopy(renderer, texture, NULL, NULL));
@@ -291,14 +330,32 @@ void sdl_present_surface()
 	surface_dirty = false;
 }
 
+
+//CHANGE REMOVE LATER
+// struct ScreenRow
+// {
+// 	char col_unused_1[64];
+// 	char pixels[640];
+// 	char col_unused_2[64];
+// };
+
+// struct Screen /* create union for work data vs visible data */
+// {
+// 	ScreenRow row_unused_1[160];
+// 	ScreenRow row[480];
+// 	ScreenRow row_unused_2[16];
+// };
+
+
+
+
 void __cdecl lock_buf_priv()
 {
 
 	if (!gpBuffer) {
 		printf(" GpBuffer Created\n ");
 		const int pitch = 640 + 64 + 64;
-		gpBuffer = (Screen *)malloc(sizeof(Screen));
-		printf("SIZE OF SCREEN %d", sizeof(Screen));
+		gpBuffer = (BYTE *)malloc(503808);
 		gpBufEnd += (unsigned int)gpBuffer;
 
 
@@ -314,9 +371,57 @@ void __cdecl lock_buf_priv()
 
 }
 
+// void lock_buf_priv()
+// {
+// 	DDSURFACEDESC ddsd;
+// 	HRESULT error_code;
+
+// #ifdef __cplusplus
+// 	sgMemCrit.Enter();
+// #endif
+// 	if (sgpBackBuf != NULL) {
+// 		gpBuffer = sgpBackBuf;
+// 		sgdwLockCount++;
+// 		return;
+// 	}
+
+// 	if (lpDDSBackBuf == NULL) {
+// 		Sleep(20000);
+// 		app_fatal("lock_buf_priv");
+// 		sgdwLockCount++;
+// 		return;
+// 	}
+
+// 	if (sgdwLockCount != 0) {
+// 		sgdwLockCount++;
+// 		return;
+// 	}
+// 	ddsd.dwSize = sizeof(ddsd);
+// #ifdef __cplusplus
+// 	error_code = lpDDSBackBuf->Lock(NULL, &ddsd, 0, NULL);
+// #else
+// 	error_code = lpDDSBackBuf->lpVtbl->Lock(lpDDSBackBuf, NULL, &ddsd, DDLOCK_WAIT, NULL);
+// #endif
+// 	if (error_code != S_OK)
+// 		DDErrMsg(error_code, 235, "C:\\Src\\Diablo\\Source\\dx.cpp");
+
+// 	gpBufEnd += (uintptr_t)ddsd.lpSurface;
+// 	gpBuffer = (BYTE *)ddsd.lpSurface;
+// 	sgdwLockCount++;
+// }
+
+
+
+
+
+
+
+
+
+
+
 void __cdecl unlock_buf_priv()
 {
-	
 	gpBufEnd -= (unsigned int)gpBufEnd;
 		
 
@@ -361,7 +466,7 @@ BOOL STORMAPI SDrawUpdatePalette(unsigned int firstentry, unsigned int numentrie
 
 	assert(palette);
 	SDL_CHECK(SDL_SetPaletteColors(palette, colors, firstentry, numentries));
-
+	//printf("Is this ever hit?\n");
 	if (pal_surface) {
 		sdl_update_entire_surface();
 		sdl_present_surface();

@@ -2,29 +2,20 @@
 #ifndef __WAVE_H__
 #define __WAVE_H__
 
-extern int wave_cpp_init_value; // weak
-//int dword_6ABB9C; // weak
-
-void __cdecl wave_cpp_init();
-bool __fastcall WCloseFile(void *file);
-int __fastcall WGetFileSize(HANDLE hsFile, unsigned long *a2);
-void __fastcall WGetFileArchive(HANDLE hsFile, int *a2, char *dwInitParam);
-int __fastcall WOpenFile(char *dwInitParam, HANDLE *phsFile, int a3);
-void __fastcall WReadFile(HANDLE hsFile, LPVOID buf, int a3);
-int __fastcall WSetFilePointer(HANDLE file1, int offset, HANDLE file2, int whence);
-int __fastcall LoadWaveFormat(HANDLE hsFile, WAVEFORMATEX *pwfx);
-void *__fastcall AllocateMemFile(HANDLE hsFile, MEMFILE *pMemFile, unsigned int dwPos);
-void __fastcall FreeMemFile(MEMFILE *pMemFile);
-int __fastcall ReadWaveFile(MEMFILE *pMemFile, WAVEFORMATEX *pwfx, int *a3);
-int __fastcall ReadMemFile(MEMFILE *pMemFile, void *lpBuf, size_t a3);
-void __fastcall FillMemFile(MEMFILE *pMemFile);
-int __fastcall SeekMemFile(MEMFILE *pMemFile, unsigned int lDist, int dwMethod);
-int __fastcall ReadWaveSection(MEMFILE *pMemFile, int a2, int *a3);
-void *__fastcall LoadWaveFile(HANDLE hsFile, WAVEFORMATEX *pwfx, int *a3);
-void __fastcall j_engine_mem_free(void *ptr);
-
-/* rdata */
-
-extern const int wave_inf; // weak
+BOOL WCloseFile(HANDLE file);
+LONG WGetFileSize(HANDLE hsFile, DWORD *lpFileSizeHigh);
+void WGetFileArchive(HANDLE hsFile, DWORD *retry, const char *FileName);
+BOOL WOpenFile(const char *FileName, HANDLE *phsFile, BOOL mayNotExist);
+void WReadFile(HANDLE hsFile, LPVOID buf, DWORD to_read);
+int WSetFilePointer(HANDLE file1, int offset, HANDLE file2, int whence);
+BOOL LoadWaveFormat(HANDLE hsFile, WAVEFORMATEX *pwfx);
+void *AllocateMemFile(HANDLE hsFile, MEMFILE *pMemFile, DWORD dwPos);
+void FreeMemFile(MEMFILE *pMemFile);
+BOOL ReadWaveFile(MEMFILE *pMemFile, WAVEFORMATEX *pwfx, CKINFO *chunk);
+BOOL ReadMemFile(MEMFILE *pMemFile, void *lpBuf, size_t length);
+void FillMemFile(MEMFILE *pMemFile);
+int SeekMemFile(MEMFILE *pMemFile, ULONG lDist, DWORD dwMethod);
+BOOL ReadWaveSection(MEMFILE *pMemFile, DWORD id, CKINFO *chunk);
+BYTE *LoadWaveFile(HANDLE hsFile, WAVEFORMATEX *pwfx, CKINFO *chunk);
 
 #endif /* __WAVE_H__ */

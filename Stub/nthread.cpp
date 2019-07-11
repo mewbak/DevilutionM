@@ -4,15 +4,36 @@
 #include "stubs.h"
 
 #ifndef NO_GLOBALS
-int gdwNormalMsgSize;
-int gdwLargestMsgSize;
-int gdwMsgLenTbl[4];
+//int gdwNormalMsgSize;
+//int gdwLargestMsgSize;
+//int gdwMsgLenTbl[4];
 int glpMsgTbl[4];
-int gdwTurnsInTransit;
+//int gdwTurnsInTransit;
 char byte_679704;
 #endif
 
-void __fastcall nthread_start(bool set_turn_upper_bit)
+
+
+
+BOOL nthread_has_500ms_passed(BOOL unused)
+{
+	DWORD currentTickCount;
+	int ticksElapsed;
+
+	currentTickCount = GetTickCount();
+	ticksElapsed = currentTickCount - last_tick;
+	if (gbMaxPlayers == 1 && ticksElapsed > 500) {
+		last_tick = currentTickCount;
+		ticksElapsed = 0;
+	}
+	return ticksElapsed >= 0;
+}
+
+
+
+
+
+void nthread_start(BOOL set_turn_upper_bit)
 {
 	DUMMY();
 	byte_679704 = 1;
@@ -26,12 +47,12 @@ void __cdecl nthread_cleanup()
 	DUMMY();
 }
 
-void __fastcall nthread_terminate_game(const char *pszFcn)
+void  nthread_terminate_game(const char *pszFcn)
 {
 	UNIMPLEMENTED();
 }
 
-void __fastcall nthread_ignore_mutex(bool bStart)
+void nthread_ignore_mutex(BOOL bStart)
 {
 	DUMMY();
 }
@@ -57,7 +78,7 @@ static void frame_rate_limiter()
 	last_frame_time = GetTickCount();
 }
 
-int __fastcall nthread_send_and_recv_turn(int cur_turn, int turn_delta)
+DWORD nthread_send_and_recv_turn(DWORD cur_turn, int turn_delta)
 {
 	DUMMY_ONCE();
 	// DUMMY_PRINT("cur_turn: %d turn_delta: %d", cur_turn, turn_delta);
@@ -72,7 +93,7 @@ void __cdecl nthread_set_turn_upper_bit()
 	UNIMPLEMENTED();
 }
 
-int __fastcall nthread_recv_turns(int *pfSendAsync)
+int  nthread_recv_turns(int *pfSendAsync)
 {
 	DUMMY_ONCE();
 	*pfSendAsync = 0;

@@ -1,17 +1,27 @@
-// temporary file
 
 #ifndef _TYPES_H
 #define _TYPES_H
 
 #ifdef ANDROID
 #include <android/log.h>
-#include "miniwin.h"
+//#include "miniwin.h"
 #endif
 
 #include "resource.h"
 
+
+#ifndef INVALID_HANDLE_VALUE
+#define INVALID_HANDLE_VALUE ((HANDLE)-1)
+#endif
+
 #ifdef MINIWIN
+#define BOOLEAN BOOL
+//#define BYTE char // Probably not good to do.
+
 #include "miniwin.h"
+#include <limits.h>
+
+//#include <x86intrin.h>
 #endif
 
 //#ifdef __WIN32__
@@ -87,6 +97,7 @@
 /* */
 
 // header files
+
 #include "Source/appfat.h"
 #include "Source/automap.h"
 #include "Source/capture.h"
@@ -153,7 +164,88 @@
 #include "Source/towners.h"
 #include "Source/track.h"
 #include "Source/trigs.h"
-#include "Source/wave.h"
+#include "Stub/wave.h"
+#include "Stub/miniwin_sdl.h"
+
+#include "Source/appfat.h"
+#include "Source/automap.h"
+#include "Source/capture.h"
+#include "Source/codec.h"
+#include "Source/control.h"
+#include "Source/cursor.h"
+#include "Source/dead.h"
+#include "Source/debug.h"
+#include "Source/doom.h"
+#include "Source/drlg_l1.h"
+#include "Source/drlg_l2.h"
+#include "Source/drlg_l3.h"
+#include "Source/drlg_l4.h"
+#include "Source/dthread.h"
+#include "Source/dx.h"
+#include "Source/effects.h"
+#include "Source/encrypt.h"
+#include "Source/engine.h"
+#include "Source/error.h"
+#include "Source/fault.h"
+#include "Source/gamemenu.h"
+#include "Source/gendung.h"
+#include "Source/gmenu.h"
+#include "Source/help.h"
+#include "Source/init.h"
+#include "Source/interfac.h"
+#include "Source/inv.h"
+#include "Source/itemdat.h"
+#include "Source/items.h"
+#include "Source/lighting.h"
+#include "Source/loadsave.h"
+#include "Source/logging.h"
+#include "Source/mainmenu.h"
+#include "Source/minitext.h"
+#include "Source/misdat.h"
+#include "Source/missiles.h"
+#include "Source/monstdat.h"
+#include "Source/monster.h"
+#include "Source/movie.h"
+#include "Source/mpqapi.h"
+#include "Source/msg.h"
+#include "Source/msgcmd.h"
+#include "Source/multi.h"
+#include "Source/nthread.h"
+#include "Source/objdat.h"
+#include "Source/objects.h"
+#include "Source/pack.h"
+#include "Source/palette.h"
+#include "Source/path.h"
+#include "Source/pfile.h"
+#include "Source/player.h"
+#include "Source/plrmsg.h"
+#include "Source/portal.h"
+#include "Source/quests.h"
+#include "Source/restrict.h"
+#include "Source/scrollrt.h"
+#include "Source/setmaps.h"
+#include "Source/sha.h"
+#include "Source/sound.h"
+#include "Source/spelldat.h"
+#include "Source/spells.h"
+#include "Source/stores.h"
+#include "Source/sync.h"
+#include "Source/textdat.h" 
+#include "Source/themes.h"
+#include "Source/tmsg.h"
+#include "Source/town.h"
+#include "Source/towners.h"
+#include "Source/track.h"
+#include "Source/trigs.h"
+
+
+
+
 #include "Source/render.h" // linked last, likely .s/.asm
 
 #endif
+
+//ADDITIONAL VARS
+//ADDITIONAL VARS
+//void unlock_buf(BYTE idx);
+//lock_buf(unsigned char);

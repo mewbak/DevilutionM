@@ -5,9 +5,10 @@ set(DISTRIBUTION_DIR ${CMAKE_SOURCE_DIR}/android/distribution/android/SDL2/inter
 
 add_definitions(
     -D_DEBUG
-    -DANDROID
+    -DMINIWIN
     # Skip fades and other fluff
     -DFASTER
+
 )
 
 
@@ -17,8 +18,7 @@ include_directories(. Stub)
 
 
 set(SOURCE_FILES  
-    Stub/main.cpp 
-    Source/automap.cpp
+      Source/automap.cpp
     Source/codec.cpp
     Source/control.cpp
     Source/cursor.cpp
@@ -35,6 +35,10 @@ set(SOURCE_FILES
     Source/gendung.cpp
     Source/gmenu.cpp
     Source/help.cpp
+    Source/itemdat.cpp
+    Source/misdat.cpp
+    Source/monstdat.cpp
+    Source/spelldat.cpp
     Source/interfac.cpp
     Source/inv.cpp
     Source/items.cpp
@@ -48,6 +52,7 @@ set(SOURCE_FILES
     Source/msgcmd.cpp
     Source/msg.cpp
     Source/multi.cpp
+    Source/objdat.cpp
     Source/objects.cpp
     Source/pack.cpp
     Source/palette.cpp
@@ -71,11 +76,12 @@ set(SOURCE_FILES
     Source/towners.cpp
     Source/track.cpp
     Source/trigs.cpp
-    Source/wave.cpp
+    Stub/wave.cpp
 
-     3rdParty/PKWare/explode.cpp
-     3rdParty/PKWare/implode.cpp
+    3rdParty/PKWare/explode.cpp
+    3rdParty/PKWare/implode.cpp
 
+    Stub/main.cpp
     Stub/miniwin.cpp
     Stub/miniwin_rand.cpp
     Stub/appfat.cpp

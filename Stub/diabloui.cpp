@@ -3,7 +3,7 @@
 #include "../types.h"
 #include "stubs.h"
 
-void __cdecl UiDestroy()
+void  UiDestroy()
 {
     DUMMY();
 }
@@ -14,7 +14,7 @@ BOOL __stdcall UiTitleDialog(int a1)
     return TRUE;
 }
 
-void __cdecl UiInitialize()
+void  UiInitialize()
 {
     DUMMY();
 }
@@ -61,14 +61,14 @@ BOOL __stdcall UiSelHeroSingDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninf
 
 
         if (StartNewGame) {
-            const char *hero_name = chr_name_str;
+            const char *hero_name = infostr;
             DUMMY_PRINT("New Game use hero: %s\n", hero_name);
             strcpy(name, hero_name);
             printf("Difficulty : %d \n",* difficulty);
 
 
         } else {
-            const char *hero_name = chr_name_str;
+            const char *hero_name = infostr;
             DUMMY_PRINT("Loading Game : use hero: %s\n", hero_name);
             strcpy(name, hero_name);
 
@@ -89,7 +89,7 @@ BOOL __stdcall UiMainMenuDialog(char *name, int *pdwResult, void(__stdcall *fnSo
     return TRUE;
 }
 
-int __cdecl UiProfileGetString()
+int  UiProfileGetString()
 {
     DUMMY();
     return 0;
@@ -115,15 +115,13 @@ BOOL __fastcall UiValidPlayerName(char *name)
     UNIMPLEMENTED();
 }
 
-int __stdcall UiProgressDialog(HWND window, char *msg, int a3, void *fnfunc, int a5)
+BOOL __stdcall UiProgressDialog(HWND window, char *msg, int enable, int(*fnfunc)(), int rate) 
 {
     UNIMPLEMENTED();
 }
 
-BOOL __stdcall UiSelHeroMultDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninfofunc)(_uiheroinfo *)),
-                                   BOOL(__stdcall *fncreate)(_uiheroinfo *), BOOL(__stdcall *fnremove)(_uiheroinfo *),
-                                   BOOL(__stdcall *fnstats)(int, _uidefaultstats *), int *dlgresult, int *a6,
-                                   char *name)
+BOOL __stdcall UiSelHeroMultDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninfofunc)(_uiheroinfo *)), BOOL(__stdcall *fncreate)(_uiheroinfo *), BOOL(__stdcall *fnremove)(_uiheroinfo *), BOOL(__stdcall *fnstats)(unsigned int, _uidefaultstats *), int *dlgresult, int *a6, char *name)
+
 {
     UNIMPLEMENTED();
 }
@@ -143,7 +141,7 @@ void __cdecl UiProfileDraw()
     UNIMPLEMENTED();
 }
 
-BOOL __stdcall UiCategoryCallback(int a1, int a2, int a3, int a4, int a5, _DWORD *a6, _DWORD *a7)
+BOOL __stdcall UiCategoryCallback(int a1, int a2, int a3, int a4, int a5, DWORD *a6, DWORD *a7)
 {
     UNIMPLEMENTED();
 }
@@ -179,8 +177,7 @@ BOOL __stdcall UiCreateGameCallback(int a1, int a2, int a3, int a4, int a5, int 
     UNIMPLEMENTED();
 }
 
-BOOL __stdcall UiArtCallback(int game_type, unsigned int art_code, PALETTEENTRY *pPalette, void *pBuffer,
-                             DWORD dwBuffersize, DWORD *pdwWidth, DWORD *pdwHeight, DWORD *pdwBpp)
+BOOL __stdcall UiArtCallback(int game_type, unsigned int art_code, PALETTEENTRY *pPalette, BYTE *pBuffer, DWORD dwBuffersize, DWORD *pdwWidth, DWORD *pdwHeight, DWORD *pdwBpp)
 {
     UNIMPLEMENTED();
 }

@@ -1,96 +1,4 @@
-// some global definitions, found in debug release
-
-#define DMAXX					40
-#define DMAXY					40
-
-#define LIGHTSIZE				6912 // 27 * 256
-
-// must be unsigned to generate unsigned comparisons with pnum
-#define MAX_PLRS				4
-
-#define MAX_CHARACTERS			10
-#define MAX_LVLMTYPES			16
-// #define MAX_PATH				260
-#define MAX_SEND_STR_LEN		80
-#define MAX_SPELLS				37
-
-#define MAXDEAD					31
-#define MAXDUNX					112
-#define MAXDUNY					112
-#define MAXITEMS				127
-#define MAXBELTITEMS			8
-#define MAXMISSILES				125
-#define MAXMONSTERS				200
-#define MAXMULTIQUESTS			4
-#define MAXOBJECTS				127
-#define MAXPORTAL				4
-#define MAXQUESTS				16
-#define MAXTHEMES				50
-#define MAXTILES				2048
-#define MAXTRIGGERS				5
-#define MDMAXX					40
-#define MDMAXY					40
-
-// number of inventory grid cells
-#define NUM_INV_GRID_ELEM			40
-#define INV_SLOT_SIZE_PX		28
-
-// Item indestructible durability
-#define DUR_INDESTRUCTIBLE		255
-
-#define VOLUME_MIN				-1600
-#define VOLUME_MAX				0
-
-// todo: enums
-#define NUM_SFX					858
-#define NUMLEVELS				17
-
-// from diablo 2 beta
-#define MAXEXP					2000000000
-
-#define PLR_NAME_LEN			32
-
-// Diablo uses a 256 color palette
-// Entry 0-127 (0x00-0x7F) are level specific
-// Entry 128-255 (0x80-0xFF) are global
-
-// standard palette for all levels
-// 8 or 16 shades per color
-// example (dark blue): PAL16_BLUE+14, PAL8_BLUE+7
-// example (light red): PAL16_RED+2, PAL8_RED
-// example (orange): PAL16_ORANGE+8, PAL8_ORANGE+4
-#define PAL8_BLUE		128
-#define PAL8_RED		136
-#define PAL8_YELLOW		144
-#define PAL8_ORANGE		152
-#define PAL16_BEIGE		160
-#define PAL16_BLUE		176
-#define PAL16_YELLOW	192
-#define PAL16_ORANGE	208
-#define PAL16_RED		224
-#define PAL16_GRAY		240
-
-#ifndef INVALID_FILE_ATTRIBUTES
-#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
-#endif
-
-
-
-/////////////////////////////////////////////////////////////////////////
-/* temporary stuff from the decompiler */
-/* remove all the garbage below in the future */
-/////////////////////////////////////////////////////////////////////////
-#ifndef IDA_GARBAGE
-#define IDA_GARBAGE
-
-inline void memset32(void *s, unsigned int c, size_t n)
-{
-	unsigned int *p = (unsigned int *)s;
-	for (int i = 0; i < n; i++) {
-		p[i] = c;
-	}
-}
-
+//ADDITIONAL DEFS
 typedef          __int64 ll;
 typedef unsigned __int64 ull;
 
@@ -112,8 +20,15 @@ typedef ll              int64;
 typedef ll              sint64;
 typedef ull             uint64;
 
+
+
+
+
+
 // Partially defined types. They are used when the decompiler does not know
 // anything about the type except its size.
+
+
 #define _BYTE  uint8
 #define _WORD  uint16
 #define _DWORD uint32
@@ -133,7 +48,7 @@ typedef ull             uint64;
 #define WORDn(x, n)   (*((_WORD*)&(x)+n))
 #define DWORDn(x, n)  (*((_DWORD*)&(x)+n))
 
-#define _LOBYTE(x)  BYTEn(x,LOW_IND(x,_BYTE))
+//#define _LOBYTE(x)  BYTEn(x,LOW_IND(x,_BYTE)) // from old game.
 #define _LOWORD(x)  WORDn(x,LOW_IND(x,_WORD))
 #define LODWORD(x) DWORDn(x,LOW_IND(x,_DWORD))
 #define _HIBYTE(x)  BYTEn(x,HIGH_IND(x,_BYTE))
@@ -152,95 +67,185 @@ typedef ull             uint64;
 
 
 
-// Helper functions to represent some assembly instructions.
 
-#ifdef __cplusplus
+//END
 
-#ifdef FAST_MEMCPY
-#define qmemcpy memcpy
+// some global definitions, found in debug release
+
+#define DMAXX					40
+#define DMAXY					40
+
+#define LIGHTSIZE				6912 // 27 * 256
+
+#define GMENU_SLIDER			(DWORD)1 << 30
+#define GMENU_ENABLED			(DWORD)1 << 31
+
+// must be unsigned to generate unsigned comparisons with pnum
+#define MAX_PLRS				4
+
+#define MAX_CHARACTERS			10
+#define MAX_LVLMTYPES			16
+// #define MAX_PATH				260
+#define MAX_SEND_STR_LEN		80
+#define MAX_SPELLS				37
+
+#define MAXDEAD					31
+#define MAXDUNX					112
+#define MAXDUNY					112
+#define MAXITEMS				127
+#define MAXBELTITEMS			8
+#define MAXLIGHTS				32
+#define MAXMISSILES				125
+#define MAXMONSTERS				200
+#define MAXMULTIQUESTS			4
+#define MAXOBJECTS				127
+#define MAXPORTAL				4
+#define MAXQUESTS				16
+#define MAXTHEMES				50
+#define MAXTILES				2048
+#define MAXTRIGGERS				5
+#define MAXVISION				32
+#define MDMAXX					40
+#define MDMAXY					40
+#define MAXCHARLEVEL			51
+
+// number of inventory grid cells
+#define NUM_INV_GRID_ELEM		40
+#define INV_SLOT_SIZE_PX		28
+
+// Item indestructible durability
+#define DUR_INDESTRUCTIBLE		255
+
+#define VOLUME_MIN				-1600
+#define VOLUME_MAX				0
+
+// todo: enums
+#define NUM_SFX					858
+#define NUMLEVELS				17
+
+// from diablo 2 beta
+#define MAXEXP					2000000000
+
+#define GOLD_SMALL_LIMIT		1000
+#define GOLD_MEDIUM_LIMIT		2500
+#define GOLD_MAX_LIMIT			5000
+
+#define PLR_NAME_LEN			32
+
+#define MAXPATHNODES			300
+
+// 256 kilobytes + 3 bytes (demo leftover) for file magic (262147)
+// final game uses 4-byte magic instead of 3
+#define FILEBUFF				((256*1024)+3)
+
+#define PMSG_COUNT				8
+
+// Diablo Retail Version Game ID
+#define GAME_ID					((int)'DRTL')
+
+// Diablo uses a 256 color palette
+// Entry 0-127 (0x00-0x7F) are level specific
+// Entry 128-255 (0x80-0xFF) are global
+
+// standard palette for all levels
+// 8 or 16 shades per color
+// example (dark blue): PAL16_BLUE+14, PAL8_BLUE+7
+// example (light red): PAL16_RED+2, PAL8_RED
+// example (orange): PAL16_ORANGE+8, PAL8_ORANGE+4
+#define PAL8_BLUE		128
+#define PAL8_RED		136
+#define PAL8_YELLOW		144
+#define PAL8_ORANGE		152
+#define PAL16_BEIGE		160
+#define PAL16_BLUE		176
+#define PAL16_YELLOW	192
+#define PAL16_ORANGE	208
+#define PAL16_RED		224
+#define PAL16_GRAY		240
+
+#define SCREEN_WIDTH	640
+#define SCREEN_HEIGHT	480
+
+// If defined, use 32-bit colors instead of 8-bit [Default -> Undefined]
+//#define RGBMODE
+
+#ifndef RGBMODE
+#define SCREEN_BPP		8
 #else
-inline void *qmemcpy(void *dst, const void *src, size_t cnt)
-{
-  char *out = (char *)dst;
-  const char *in = (const char *)src;
-  while ( cnt > 0 )
-  {
-    *out++ = *in++;
-    --cnt;
-  }
-  return dst;
-}
+#define SCREEN_BPP		32
 #endif
 
-// Generate a reference to pair of operands
-template<class T>  int16 __PAIR__( int8  high, T low) { return ((( int16)high) << sizeof(high)*8) | uint8(low); }
-template<class T>  int32 __PAIR__( int16 high, T low) { return ((( int32)high) << sizeof(high)*8) | uint16(low); }
-template<class T>  int64 __PAIR__( int32 high, T low) { return ((( int64)high) << sizeof(high)*8) | uint32(low); }
-template<class T> uint16 __PAIR__(uint8  high, T low) { return (((uint16)high) << sizeof(high)*8) | uint8(low); }
-template<class T> uint32 __PAIR__(uint16 high, T low) { return (((uint32)high) << sizeof(high)*8) | uint16(low); }
-template<class T> uint64 __PAIR__(uint32 high, T low) { return (((uint64)high) << sizeof(high)*8) | uint32(low); }
+#define BORDER_LEFT		64
+#define BORDER_TOP		160
+#define BORDER_RIGHT	64
+#define BORDER_BOTTOM	16
 
-// rotate left
-template<class T> T __ROL__(T value, int count)
-{
-  const uint nbits = sizeof(T) * 8;
+#define SCREEN_X		BORDER_LEFT
+#define SCREEN_Y		BORDER_TOP
 
-  if ( count > 0 )
-  {
-    count %= nbits;
-    T high = value >> (nbits - count);
-    if ( T(-1) < 0 ) // signed value
-      high &= ~((T(-1) << count));
-    value <<= count;
-    value |= high;
-  }
-  else
-  {
-    count = -count % nbits;
-    T low = value << (nbits - count);
-    value >>= count;
-    value |= low;
-  }
-  return value;
+#define BUFFER_WIDTH	(BORDER_LEFT + SCREEN_WIDTH + BORDER_RIGHT)
+#define BUFFER_HEIGHT	(BORDER_TOP + SCREEN_HEIGHT + BORDER_BOTTOM)
+#define TILE_SIZE		32
+
+#define VIEWPORT_HEIGHT	352
+
+#define SCREENXY(x, y)	((x) + SCREEN_X + ((y) + SCREEN_Y) * BUFFER_WIDTH)
+
+#define MemFreeDbg(p)	\
+{						\
+	void *p__p;			\
+	p__p = p;			\
+	p = NULL;			\
+	mem_free_dbg(p__p);	\
 }
 
-inline uint16 __ROR2__(uint16 value, int count) { return __ROL__((uint16)value, -count); }
-inline uint32 __ROR4__(uint32 value, int count) { return __ROL__((uint32)value, -count); }
+#undef assert
 
-// sign flag
-template<class T> int8 __SETS__(T x)
-{
-  if ( sizeof(T) == 1 )
-    return int8(x) < 0;
-  if ( sizeof(T) == 2 )
-    return int16(x) < 0;
-  if ( sizeof(T) == 4 )
-    return int32(x) < 0;
-  return int64(x) < 0;
-}
-
-// overflow flag of subtraction (x-y)
-template<class T, class U> int8 __OFSUB__(T x, U y)
-{
-  if ( sizeof(T) < sizeof(U) )
-  {
-    U x2 = x;
-    int8 sx = __SETS__(x2);
-    return (sx ^ __SETS__(y)) & (sx ^ __SETS__(x2-y));
-  }
-  else
-  {
-    T y2 = y;
-    int8 sx = __SETS__(x);
-    return (sx ^ __SETS__(y2)) & (sx ^ __SETS__(x-y2));
-  }
-}
-
+#ifndef _DEBUG
+#define assert(exp) ((void)0)
+#else
+#define assert(exp) (void)( (exp) || (assert_fail(__LINE__, __FILE__, #exp), 0) )
 #endif
 
+#ifndef INVALID_FILE_ATTRIBUTES
+#define INVALID_FILE_ATTRIBUTES ((DWORD)-1)
+#endif
+
+/////////////////////////////////////////////////////////////////////////
+/* temporary stuff from the decompiler */
+/* remove all the garbage below in the future */
+/////////////////////////////////////////////////////////////////////////
+#ifndef IDA_GARBAGE
+#define IDA_GARBAGE
+#define _LOBYTE(x)  (*((BYTE*)&(x)))
 #endif /* IDA_GARBAGE */
 
-#ifndef INFINITY
-#include <limits>
-#define INFINITY std::numeric_limits<float>::infinity()
+// Typedef for the function pointer
+typedef void (*_PVFV)(void);
+
+#if defined(_MSC_VER) && !defined(__APPLE__)
+// Define our segment names
+#define SEGMENT_C_INIT ".CRT$XCU"
+
+// Build our various function tables and insert them into the correct segments.
+#pragma data_seg(SEGMENT_C_INIT)
+#pragma data_seg() // Switch back to the default segment
+// Call function pointer arrays and place them in the segments created above
+#define SEG_ALLOCATE(SEGMENT) __declspec(allocate(SEGMENT))
+#else
+#define SEG_ALLOCATE(SEGMENT)
 #endif
+
+// To apply to certain functions which have local variables aligned by 1 for unknown yet reason
+#ifdef _MSC_VER
+#define ALIGN_BY_1 __declspec(align(1))
+#else
+#define ALIGN_BY_1
+#endif
+
+
+//Additional DEFS
+
+#define OF_EXIST 1
+#define DD_OK 0
+#define DDERR_GENERIC 0x80004005L

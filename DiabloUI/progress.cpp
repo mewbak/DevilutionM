@@ -10,7 +10,7 @@ signed int Progress_10009480() { return 0; }
 // 1002A2EC: using guessed type int dword_1002A2EC;
 
 // ref: 0x1000948B
-int __stdcall UiProgressDialog(HWND window, char *msg, int a3, void *fnfunc, int a5) { return 0; }
+BOOL __stdcall UiProgressDialog(HWND window, char *msg, int enable, int(*fnfunc)(), int rate) { return 0; }
 /* {
 	HWND v5; // eax
 	BOOL result; // eax
@@ -30,7 +30,7 @@ int __stdcall UiProgressDialog(HWND window, char *msg, int a3, void *fnfunc, int
 	}
 	return result;
 } */
-// 1001045A: using guessed type int __stdcall SDlgCreateDialogParam(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD);
+// 1001045A: using guessed type int __stdcall SDlgCreateDialogParam(DWORD, DWORD, DWORD, DWORD, DWORD);
 // 1002A2E8: using guessed type int dword_1002A2E8;
 // 1002A2F0: using guessed type int dword_1002A2F0;
 // 1002A2F4: using guessed type int (*dword_1002A2F4)(void);
@@ -45,14 +45,14 @@ int __stdcall Progress_100094F4(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lPara
 
 	if ( Msg == 2 )
 	{
-		ShowCursor(0);
+		ShowCursor(FALSE);
 		Progress_100095EC();
 	}
 	else if ( Msg > 0x103 )
 	{
 		if ( Msg <= 0x105 )
 		{
-			v7 = (HWND)SDrawGetFrameWindow();
+			v7 = (HWND)SDrawGetFrameWindow(NULL);
 			SendMessageA(v7, Msg, wParam, lParam);
 		}
 		else
@@ -61,17 +61,17 @@ int __stdcall Progress_100094F4(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lPara
 			{
 				case 0x110u:
 					Progress_10009675(hWnd, (const CHAR *)lParam);
-					v5 = (void *)SDrawGetFrameWindow();
+					v5 = (void *)SDrawGetFrameWindow(NULL);
 					local_1000812B(v5);
 					local_1000812B(hWnd);
-					ShowCursor(1);
+					ShowCursor(TRUE);
 					return 1;
 				case 0x111u:
-					if ( (_WORD)wParam == 2 )
+					if ( (WORD)wParam == 2 )
 					{
 						SDlgKillTimer(hWnd, 1);
 						v4 = GetParent(hWnd);
-						if ( (HWND)SDrawGetFrameWindow() == v4 )
+						if ( (HWND)SDrawGetFrameWindow(NULL) == v4 )
 							Fade_100072BE(10);
 						Progress_100098B0();
 					}
@@ -84,9 +84,9 @@ int __stdcall Progress_100094F4(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lPara
 	}
 	return SDlgDefDialogProc(hWnd, Msg, wParam, lParam);
 } */
-// 1001037C: using guessed type int __stdcall SDlgDefDialogProc(_DWORD, _DWORD, _DWORD, _DWORD);
-// 10010382: using guessed type _DWORD __stdcall SDrawGetFrameWindow();
-// 10010418: using guessed type int __stdcall SDlgKillTimer(_DWORD, _DWORD);
+// 1001037C: using guessed type int __stdcall SDlgDefDialogProc(DWORD, DWORD, DWORD, DWORD);
+// 10010382: using guessed type DWORD __stdcall SDrawGetFrameWindow();
+// 10010418: using guessed type int __stdcall SDlgKillTimer(DWORD, DWORD);
 
 // ref: 0x100095EC
 void *Progress_100095EC() { return 0; }
@@ -121,7 +121,7 @@ void *Progress_100095EC() { return 0; }
 	}
 	return result;
 } */
-// 10010340: using guessed type int __stdcall SMemFree(_DWORD, _DWORD, _DWORD, _DWORD);
+// 10010340: using guessed type int __stdcall SMemFree(DWORD, DWORD, DWORD, DWORD);
 // 1002A318: using guessed type int dword_1002A318;
 // 1002A31C: using guessed type int dword_1002A31C;
 // 1002A320: using guessed type int dword_1002A320;
@@ -153,7 +153,7 @@ BOOL __fastcall Progress_10009675(HWND hWnd, const CHAR *a2) { return 0; }
 		SDlgSetTimer(hWnd, 1, 50, 0);
 	local_10007944((int)v2, 0, &byte_10029448, -1, 1, (int)"ui_art\\spopup.pcx", &dword_1002A318, 0, 0);
 	v3 = GetParent(v2);
-	if ( (HWND)SDrawGetFrameWindow() == v3 )
+	if ( (HWND)SDrawGetFrameWindow(NULL) == v3 )
 		Fade_100073EF(v2);
 	v4 = local_10007895(0);
 	SDrawUpdatePalette(0, 10, v4, 0);
@@ -175,11 +175,11 @@ BOOL __fastcall Progress_10009675(HWND hWnd, const CHAR *a2) { return 0; }
 	ShowWindow(v6, bEnable != 0);
 	return EnableWindow(v6, bEnable);
 } */
-// 10010364: using guessed type int __stdcall SMemAlloc(_DWORD, _DWORD, _DWORD, _DWORD);
-// 10010382: using guessed type _DWORD __stdcall SDrawGetFrameWindow();
-// 100103FA: using guessed type int __stdcall SDrawUpdatePalette(_DWORD, _DWORD, _DWORD, _DWORD);
-// 10010400: using guessed type int __stdcall SDlgSetBitmapI(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD);
-// 10010412: using guessed type int __stdcall SDlgSetTimer(_DWORD, _DWORD, _DWORD, _DWORD);
+// 10010364: using guessed type int __stdcall SMemAlloc(DWORD, DWORD, DWORD, DWORD);
+// 10010382: using guessed type DWORD __stdcall SDrawGetFrameWindow();
+// 100103FA: using guessed type int __stdcall SDrawUpdatePalette(DWORD, DWORD, DWORD, DWORD);
+// 10010400: using guessed type int __stdcall SDlgSetBitmapI(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD);
+// 10010412: using guessed type int __stdcall SDlgSetTimer(DWORD, DWORD, DWORD, DWORD);
 // 1002A2F0: using guessed type int dword_1002A2F0;
 // 1002A300: using guessed type int dword_1002A300;
 // 1002A304: using guessed type int dword_1002A304;
@@ -225,7 +225,7 @@ BOOL __fastcall Progress_10009805(HWND hWnd, int a2) { return 0; }
 	ScreenToClient(v2, (LPPOINT)&Rect.right);
 	return InvalidateRect(v2, &Rect, 0);
 } */
-// 100103F4: using guessed type int __stdcall SBltROP3(_DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD, _DWORD);
+// 100103F4: using guessed type int __stdcall SBltROP3(DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD, DWORD);
 // 1002A300: using guessed type int dword_1002A300;
 // 1002A304: using guessed type int dword_1002A304;
 // 1002A308: using guessed type int dword_1002A308;
@@ -257,7 +257,7 @@ void UNKCALL Progress_100098C5(HWND hWnd) { return; }
 	{
 		SDlgKillTimer(v1, 1);
 		v3 = GetParent(v1);
-		if ( (HWND)SDrawGetFrameWindow() == v3 )
+		if ( (HWND)SDrawGetFrameWindow(NULL) == v3 )
 			Fade_100072BE(10);
 		Progress_100098B0();
 		dword_1002A2E8 &= v4;
@@ -267,8 +267,8 @@ void UNKCALL Progress_100098C5(HWND hWnd) { return; }
 		Progress_10009805(v1, v2);
 	}
 } */
-// 10010382: using guessed type _DWORD __stdcall SDrawGetFrameWindow();
-// 10010418: using guessed type int __stdcall SDlgKillTimer(_DWORD, _DWORD);
+// 10010382: using guessed type DWORD __stdcall SDrawGetFrameWindow();
+// 10010418: using guessed type int __stdcall SDlgKillTimer(DWORD, DWORD);
 // 1002A2E8: using guessed type int dword_1002A2E8;
 // 1002A2F4: using guessed type int (*dword_1002A2F4)(void);
 
@@ -309,6 +309,6 @@ LABEL_12:
 	dword_1002A2F8 = 0;
 	return result;
 } */
-// 10010460: using guessed type _DWORD __stdcall SDlgUpdateCursor();
-// 10010466: using guessed type _DWORD __stdcall SDlgCheckTimers();
+// 10010460: using guessed type DWORD __stdcall SDlgUpdateCursor();
+// 10010466: using guessed type DWORD __stdcall SDlgCheckTimers();
 // 1002A2F8: using guessed type int dword_1002A2F8;

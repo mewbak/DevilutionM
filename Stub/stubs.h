@@ -2,11 +2,6 @@
 
 #include <SDL.h>
 //#include <SDL_image.h>
-
-#ifdef ANDROID
-#include <android/log.h>
-#endif
-
 #include <SDL_mixer.h>
 #include "miniwin_sdl.h"
 
@@ -14,7 +9,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#define eprintf(...) __android_log_print("DEBUGMSG", __VA_ARGS__); //fprintf(stderr, __VA_ARGS__)
+#define eprintf(...) fprintf(stderr, __VA_ARGS__)
 
 #define UNIMPLEMENTED() \
 	{ \
@@ -33,9 +28,7 @@
 		} \
 	}
 
-#define DUMMY_PRINT(fmt, ...)  eprintf("DUMMY: %s : " fmt "\n", __FUNCTION__, __VA_ARGS__)
-
-#define printf(...) __android_log_print(ANDROID_LOG_DEBUG, "DEBUGMSG", __VA_ARGS__);
+#define DUMMY_PRINT(fmt, ...) eprintf("DUMMY: %s : " fmt "\n", __FUNCTION__, __VA_ARGS__)
 
 static inline const char *nullstr(const char *a)
 {

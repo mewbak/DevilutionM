@@ -1,173 +1,178 @@
-//HEADER_GOES_HERE
+#include "diablo.h"
 
-#include "../types.h"
-
-void __cdecl CaptureScreen()
+void CaptureScreen()
 {
+	HANDLE hObject;
 	PALETTEENTRY palette[256];
 	char FileName[MAX_PATH];
+	BOOL success;
 
-	HANDLE hObject = CaptureFile(FileName);
-	if ( hObject != INVALID_HANDLE_VALUE)
-	{
+	hObject = CaptureFile(FileName);
+	if (hObject != INVALID_HANDLE_VALUE) {
 		DrawAndBlit();
+#ifdef __cplusplus
 		lpDDPalette->GetEntries(0, 0, 256, palette);
+#else
+		lpDDPalette->lpVtbl->GetEntries(lpDDPalette, 0, 0, 256, palette);
+#endif
 		RedPalette(palette);
 
-		lock_buf_priv();
-		bool success = CaptureHdr(hObject, 640, 480);
-		if (success)
-		{
-			success = CapturePix(hObject, 640, 480, 768, (BYTE*)gpBuffer->row[0].pixels);
-			if (success)
-			{
+		//lock_buf(2);
+		success = CaptureHdr(hObject, 640, 480);
+		if (success) {
+			success = CapturePix(hObject, 640, 480, BUFFER_WIDTH, &gpBuffer[SCREENXY(0, 0)]);
+			if (success) {
 				success = CapturePal(hObject, palette);
 			}
 		}
-		unlock_buf_priv();
+		//unlock_buf(2);
 		CloseHandle(hObject);
 
 		if (!success)
 			DeleteFile(FileName);
 
 		Sleep(300);
+#ifdef __cplusplus
 		lpDDPalette->SetEntries(0, 0, 256, palette);
+#else
+		lpDDPalette->lpVtbl->SetEntries(lpDDPalette, 0, 0, 256, palette);
+#endif
 	}
 }
 
-bool __fastcall CaptureHdr(HANDLE hFile, short width, short height)
+BOOL CaptureHdr(HANDLE hFile, short width, short height)
 {
+	DWORD lpNumBytes;
 	PCXHeader Buffer;
-	memset(&Buffer, 0, sizeof(Buffer));
 
-	Buffer.xmax = width - 1;
-	Buffer.vertRes = height;
+	memset(&Buffer, 0, sizeof(Buffer));
 	Buffer.manufacturer = 10;
 	Buffer.version = 5;
 	Buffer.encoding = 1;
 	Buffer.bitsPerPixel = 8;
+	Buffer.xmax = width - 1;
 	Buffer.ymax = height - 1;
 	Buffer.horzRes = width;
+	Buffer.vertRes = height;
 	Buffer.numColorPlanes = 1;
 	Buffer.bytesPerScanLine = width;
 
-	DWORD lpNumBytes;
 	return WriteFile(hFile, &Buffer, sizeof(Buffer), &lpNumBytes, NULL) && lpNumBytes == sizeof(Buffer);
 }
 
-bool __fastcall CapturePal(HANDLE hFile, PALETTEENTRY *palette)
+BOOL CapturePal(HANDLE hFile, PALETTEENTRY *palette)
 {
-	char *v3;
-	char Buffer[769];
+	DWORD NumberOfBytesWritten;
+	BYTE pcx_palette[769];
+	int i;
 
-	Buffer[0] = 12;
-	v3 = &Buffer[1];
-	for (int i = 256; i != 0; --i)
-	{
-		v3[0] = palette->peRed;
-		v3[1] = palette->peGreen;
-		v3[2] = palette->peBlue;
-
-		palette++;
-		v3 += 3;
+	pcx_palette[0] = 12;
+	for (i = 0; i < 256; i++) {
+		pcx_palette[1 + 3 * i + 0] = palette[i].peRed;
+		pcx_palette[1 + 3 * i + 1] = palette[i].peGreen;
+		pcx_palette[1 + 3 * i + 2] = palette[i].peBlue;
 	}
 
-	DWORD lpNumBytes;
-	return WriteFile(hFile, Buffer, sizeof(Buffer), &lpNumBytes, NULL) && lpNumBytes == sizeof(Buffer);
+	return WriteFile(hFile, pcx_palette, 769, &NumberOfBytesWritten, 0) && NumberOfBytesWritten == 769;
 }
 
-bool __fastcall CapturePix(HANDLE hFile, WORD width, WORD height, WORD stride, BYTE *pixels)
+BOOL CapturePix(HANDLE hFile, WORD width, WORD height, WORD stride, BYTE *pixels)
 {
 	int writeSize;
 	DWORD lpNumBytes;
+	BYTE *pBuffer, *pBufferEnd;
 
-	BYTE *pBuffer = (BYTE *)DiabloAllocPtr(2 * width);
-	do
-	{
-		if ( !height )
-		{
-			mem_free_dbg(pBuffer);
-			return 1;
-		}
+	pBuffer = (BYTE *)DiabloAllocPtr(2 * width);
+	while (height != 0) {
 		height--;
-		BYTE *pBufferEnd = CaptureEnc(pixels, pBuffer, width);
+		pBufferEnd = CaptureEnc(pixels, pBuffer, width);
 		pixels += stride;
 		writeSize = pBufferEnd - pBuffer;
+		if (!(WriteFile(hFile, pBuffer, writeSize, &lpNumBytes, 0) && lpNumBytes == writeSize)) {
+			return FALSE;
+		}
 	}
-	while (WriteFile(hFile, pBuffer, writeSize, &lpNumBytes, 0) && lpNumBytes == writeSize);
-	return 0;
+	mem_free_dbg(pBuffer);
+	return TRUE;
 }
 
-BYTE *__fastcall CaptureEnc(BYTE *src, BYTE *dst, int width)
+BYTE *CaptureEnc(BYTE *src, BYTE *dst, int width)
 {
-	do
-	{
-		BYTE rlePixel = *src++;
-		--width;
+	int rleLength;
 
-		int rleLength = 1;
-		while (rlePixel == *src)
-		{
+	do {
+		BYTE rlePixel = *src;
+		*src++;
+		rleLength = 1;
+
+		width--;
+
+		while (rlePixel == *src) {
 			if (rleLength >= 63)
 				break;
 			if (!width)
 				break;
-			++rleLength;
+			rleLength++;
 
-			--width;
-			++src;
+			width--;
+			src++;
 		}
 
-		if (rlePixel > 0xBF || rleLength > 1)
-		{
-			*dst++ = rleLength | 0xC0;
+		if (rleLength > 1 || rlePixel > 0xBF) {
+			*dst = rleLength | 0xC0;
+			*dst++;
 		}
-		*dst++ = rlePixel;
+
+		*dst = rlePixel;
+		*dst++;
 	} while (width);
+
 	return dst;
 }
 
-HANDLE __fastcall CaptureFile(char *dst_path)
+HANDLE CaptureFile(char *dst_path)
 {
-	bool num_used[100] = { false };
+	BOOLEAN num_used[100];
+	int free_num, hFind;
+	struct _finddata_t finder;
 
-	_finddata_t finder;
-	int hFind = _findfirst("screen??.PCX", &finder);
-	if (hFind != -1)
-	{
-		do
-		{
-			if (isdigit(finder.name[6]) && isdigit(finder.name[7]))
-			{
-				num_used[10 * (finder.name[6] - '0') + (finder.name[7] - '0')] = true;
+	memset(num_used, FALSE, sizeof(num_used));
+	hFind = _findfirst("screen??.PCX", &finder);
+	if (hFind != -1) {
+		do {
+			if (isdigit(finder.name[6]) && isdigit(finder.name[7])) {
+				free_num = 10 * (finder.name[6] - '0');
+				free_num += (finder.name[7] - '0');
+				num_used[free_num] = TRUE;
 			}
+		} while (_findnext(hFind, &finder) == 0);
+	}
+
+	for (free_num = 0; free_num < 100; free_num++) {
+		if (!num_used[free_num]) {
+			sprintf(dst_path, "screen%02d.PCX", free_num);
+			return CreateFile(dst_path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 		}
-		while (_findnext(hFind, &finder) == 0);
 	}
 
-	int free_num = 0;
-	while (num_used[free_num])
-	{
-		++free_num;
-		if (free_num >= 100)
-			return INVALID_HANDLE_VALUE;
-	}
-
-	sprintf(dst_path, "screen%02d.PCX", free_num);
-	return CreateFile(dst_path, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	return INVALID_HANDLE_VALUE;
 }
 
-void __fastcall RedPalette(PALETTEENTRY *pal)
+void RedPalette(PALETTEENTRY *pal)
 {
 	PALETTEENTRY red[256];
+	int i;
 
-	for(int i = 0; i < 256; i++)
-	{
+	for (i = 0; i < 256; i++) {
 		red[i].peRed = pal[i].peRed;
 		red[i].peGreen = 0;
 		red[i].peBlue = 0;
 		red[i].peFlags = 0;
 	}
 
+#ifdef __cplusplus
 	lpDDPalette->SetEntries(0, 0, 256, red);
+#else
+	lpDDPalette->lpVtbl->SetEntries(lpDDPalette, 0, 0, 256, red);
+#endif
 }

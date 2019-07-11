@@ -894,7 +894,7 @@ struct effects_cpp_init
 // 47A468: using guessed type int effects_inf;
 // 52A550: using guessed type int effects_cpp_init_value;
 
-BOOL __fastcall effect_is_playing(int nSFX)
+BOOL  effect_is_playing(int nSFX)
 {
 	TSFX *v1; // eax
 	TSnd *v2; // ecx
@@ -924,7 +924,7 @@ void __cdecl sfx_stop()
 
 void * MSounds[10][2];
 
-void __fastcall InitMonsterSND(int monst)
+void  InitMonsterSND(int monst)
 {
 	TSnd *pSnd;
 	char name[MAX_PATH];
@@ -978,13 +978,13 @@ void __cdecl FreeEffects()
 	}
 }
 
-void __fastcall PlayEffect(int i, int mode)
+void  PlayEffect(int i, int mode)
 {
 	if ( plr[myplr].pLvlLoad ) {
 		return;
 	}
 
-	int sndIdx = random(164, 2);
+	int sndIdx = xrandom(164, 2);
 	if ( !gbSndInited || !gbSoundOn || gbBufferMsgs ) {
 		return;
 	}
@@ -1012,7 +1012,7 @@ void __fastcall PlayEffect(int i, int mode)
 
 
 
-BOOL __fastcall calc_snd_position(int x, int y, int *plVolume, int *plPan)
+BOOL  calc_snd_position(int x, int y, int *plVolume, int *plPan)
 {
 	x -= plr[myplr].WorldX;
 	y -= plr[myplr].WorldY;
@@ -1035,16 +1035,15 @@ BOOL __fastcall calc_snd_position(int x, int y, int *plVolume, int *plPan)
 	return TRUE;
 }
 
-void __fastcall PlaySFX(int psfx)
+void  PlaySFX(int psfx)
 {
 	int v1; // eax
 
-  printf("PlaySFX\n");
 	v1 = RndSFX(psfx);
 	PlaySFX_priv(&sgSFX[v1], 0, 0, 0);
 }
 
-void __fastcall PlaySFX_priv(TSFX *pSFX, BOOL loc, int x, int y)
+void  PlaySFX_priv(TSFX *pSFX, BOOL loc, int x, int y)
 {
   
   printf("PlaySFX_priv %s\n", pSFX->pszName);
@@ -1086,7 +1085,7 @@ void __fastcall PlaySFX_priv(TSFX *pSFX, BOOL loc, int x, int y)
 // 676194: using guessed type char gbBufferMsgs;
 // 679660: using guessed type char gbMaxPlayers;
 
-void __fastcall stream_play(TSFX *pSFX, int lVolume, int lPan)
+void  stream_play(TSFX *pSFX, int lVolume, int lPan)
 {
  
   printf("stream_play\n");
@@ -1106,7 +1105,7 @@ void __fastcall stream_play(TSFX *pSFX, int lVolume, int lPan)
 	}
 }
 
-int __fastcall RndSFX(int psfx)
+int  RndSFX(int psfx)
 {
 	int v1; // esi
 	int v3; // [esp-4h] [ebp-8h]
@@ -1130,7 +1129,7 @@ int __fastcall RndSFX(int psfx)
 LABEL_12:
 			v3 = 2;
 LABEL_15:
-			return v1 + random(165, v3);
+			return v1 + xrandom(165, v3);
 		case PS_WARR2:
 LABEL_19:
 			v3 = 3;
@@ -1139,15 +1138,12 @@ LABEL_19:
 	return psfx;
 }
 
-void __fastcall PlaySfxLoc(int psfx, int x, int y)
+void  PlaySfxLoc(int psfx, int x, int y)
 {
 	int v3; // esi
 	int v4; // eax
 	TSnd *v5; // ecx
 
-
-
-    printf("PlaySfxLoc\n");
 	v3 = x;
 	v4 = RndSFX(psfx);
 	if ( v4 >= 0 && v4 <= 3 )
@@ -1271,7 +1267,7 @@ void __cdecl stream_update()
 }
 // 679660: using guessed type char gbMaxPlayers;
 
-void __fastcall priv_sound_init(int bLoadMask)
+void priv_sound_init(UCHAR bLoadMask)
 {
 	unsigned char v1; // bl
 	unsigned char v2; // cl

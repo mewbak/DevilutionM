@@ -2,6 +2,7 @@
 
 #include "../types.h"
 
+
 TMenuItem sgSingleMenu[6] =
 {
   { 0x80000000, "Save Game", &gamemenu_save_game },
@@ -32,39 +33,81 @@ char *music_toggle_names[] = { "Music", "Music Disabled" };
 char *sound_toggle_names[] = { "Sound", "Sound Disabled" };
 char *color_cycling_toggle_names[] = { "Color Cycling Off", "Color Cycling On" };
 
-void __cdecl gamemenu_previous()
+void gamemenu_enable_single(TMenuItem *pMenuItems)
 {
-	void (__cdecl *v0)(); // edx
-	TMenuItem *v1; // ecx
+	BOOL enable;
 
-	if ( gbMaxPlayers == 1 )
-	{
-		v0 = gamemenu_enable_single;
-		v1 = sgSingleMenu;
+	gmenu_enable(&sgSingleMenu[3], gbValidSaveFile);
+
+	enable = FALSE;
+	if (plr[myplr]._pmode != PM_DEATH && !deathflag)
+		enable = TRUE;
+
+	gmenu_enable(sgSingleMenu, enable);
+}
+
+
+void gamemenu_previous()
+{
+	void (*proc)(TMenuItem *);
+	TMenuItem *item;
+
+	if (gbMaxPlayers == 1) {
+		proc = gamemenu_enable_single;
+		item = sgSingleMenu;
+	} else {
+		proc = gamemenu_enable_multi;
+		item = sgMultiMenu;
 	}
-	else
-	{
-		v0 = gamemenu_enable_multi;
-		v1 = sgMultiMenu;
-	}
-	gmenu_call_proc(v1, v0);
+	gmenu_call_proc(item, proc);
 	PressEscKey();
 }
+
+
+
+// void __cdecl gamemenu_previous()
+// {
+// 	void (__cdecl *v0)(); // edx
+// 	TMenuItem *v1; // ecx
+
+// 	if ( gbMaxPlayers == 1 )
+// 	{
+// 		v0 = gamemenu_enable_single;
+// 		v1 = sgSingleMenu;
+// 	}
+// 	else
+// 	{
+// 		v0 = gamemenu_enable_multi;
+// 		v1 = sgMultiMenu;
+// 	}
+// 	gmenu_call_proc(v1, v0);
+// 	PressEscKey();
+// }
+
+
+
+
+
 // 679660: using guessed type char gbMaxPlayers;
 
-void __cdecl gamemenu_enable_single()
-{
-	bool v0; // dl
+// void __cdecl gamemenu_enable_single()
+// {
+// 	bool v0; // dl
 
-	gmenu_enable(&sgSingleMenu[2], false);// Remove this when new game is working.
-	gmenu_enable(&sgSingleMenu[3], gbValidSaveFile);
-	v0 = 0;
-	if ( plr[myplr]._pmode != PM_DEATH && !deathflag )
-		v0 = 1;
-	gmenu_enable(sgSingleMenu, v0);
-}
+// 	gmenu_enable(&sgSingleMenu[2], false);// Remove this when new game is working.
+// 	gmenu_enable(&sgSingleMenu[3], gbValidSaveFile);
+// 	v0 = 0;
+// 	if ( plr[myplr]._pmode != PM_DEATH && !deathflag )
+// 		v0 = 1;
+// 	gmenu_enable(sgSingleMenu, v0);
+// }
 
-void __cdecl gamemenu_enable_multi()
+// void __cdecl gamemenu_enable_multi()
+// {
+// 	gmenu_enable(&sgMultiMenu[2], deathflag);
+// }
+
+void gamemenu_enable_multi(TMenuItem *pMenuItems)
 {
 	gmenu_enable(&sgMultiMenu[2], deathflag);
 }
@@ -82,7 +125,7 @@ void __cdecl gamemenu_handle_previous()
 		gamemenu_previous();
 }
 
-void __cdecl gamemenu_new_game()
+void __cdecl gamemenu_new_game(BOOL bActivate)
  {
 NetSendCmdString(1 << myplr, "Broken Needs To Be Fixed!");
 
@@ -107,7 +150,7 @@ NetSendCmdString(1 << myplr, "Broken Needs To Be Fixed!");
 // 525650: using guessed type int gbRunGame;
 // 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_quit_game()
+void gamemenu_quit_game(BOOL bActivate)
 {
 	//gamemenu_new_game();
 	int i;
@@ -124,13 +167,13 @@ void __cdecl gamemenu_quit_game()
 }
 // 525698: using guessed type int gbRunGameResult;
 
-void __cdecl gamemenu_load_game()
+void gamemenu_load_game(BOOL bActivate)
 {
 	WNDPROC saveProc; // edi
 
 	saveProc = SetWindowProc(DisableInputWndProc);
 	gamemenu_off();
-	SetCursor(0);
+	SetCursor_(0);
 	InitDiabloMsg(10);
 	drawpanflag = 255;
 	DrawAndBlit();
@@ -141,13 +184,13 @@ void __cdecl gamemenu_load_game()
 	drawpanflag = 255;
 	DrawAndBlit();
 	PaletteFadeIn(8);
-	SetCursor(CURSOR_HAND);
+	SetCursor_(CURSOR_HAND);
 	interface_msg_pump();
 	SetWindowProc(saveProc);
 }
 // 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_save_game()
+void  gamemenu_save_game(BOOL a1)
 {
 	WNDPROC saveProc; // edi
 
@@ -160,7 +203,7 @@ void __cdecl gamemenu_save_game()
 		else
 		{
 			saveProc = SetWindowProc(DisableInputWndProc);
-			SetCursor(0);
+			SetCursor_(0);
 			gamemenu_off();
 			InitDiabloMsg(11);
 			drawpanflag = 255;
@@ -168,7 +211,7 @@ void __cdecl gamemenu_save_game()
 			SaveGame();
 			ClrDiabloMsg();
 			drawpanflag = 255;
-			SetCursor(CURSOR_HAND);
+			SetCursor_(CURSOR_HAND);
 			interface_msg_pump();
 			SetWindowProc(saveProc);
 		}
@@ -176,12 +219,12 @@ void __cdecl gamemenu_save_game()
 }
 // 52571C: using guessed type int drawpanflag;
 
-void __cdecl gamemenu_restart_town()
+void gamemenu_restart_town(BOOL bActivate)
 {
 	NetSendCmd(1u, CMD_RETOWN);
 }
 
-void __cdecl gamemenu_options()
+void __cdecl gamemenu_options(BOOL bActivate)
 {
 	gamemenu_get_music();
 	gamemenu_get_sound();
@@ -195,14 +238,14 @@ void __cdecl gamemenu_get_music()
 	gamemenu_sound_music_toggle(music_toggle_names, sgOptionMenu, sound_get_or_set_music_volume(1));
 }
 
-void __fastcall gamemenu_sound_music_toggle(char **names, TMenuItem *menu_item, int gamma)
+void  gamemenu_sound_music_toggle(char **names, TMenuItem *menu_item, int gamma)
 {
 	if ( gbSndInited )
 	{
 		menu_item->dwFlags |= 0xC0000000;
 		menu_item->pszStr = *names;
-		gmenu_slider_3(menu_item, 17);
-		gmenu_slider_1(menu_item, VOLUME_MIN, VOLUME_MAX, gamma);
+		gmenu_slider_steps(menu_item, 17);
+		gmenu_slider_set(menu_item, VOLUME_MIN, VOLUME_MAX, gamma);
 	}
 	else
 	{
@@ -223,11 +266,11 @@ void __cdecl gamemenu_get_color_cycling()
 
 void __cdecl gamemenu_get_gamma()
 {
-	gmenu_slider_3(&sgOptionMenu[2], 15);
-	gmenu_slider_1(&sgOptionMenu[2], 30, 100, UpdateGamma(0));
+	gmenu_slider_steps(&sgOptionMenu[2], 15);
+	gmenu_slider_set(&sgOptionMenu[2], 30, 100, UpdateGamma(0));
 }
 
-void __fastcall gamemenu_music_volume(int a1)
+void  gamemenu_music_volume(int a1)
 {
 	int v1; // esi
 
@@ -266,12 +309,12 @@ LABEL_11:
 // 4A22D4: using guessed type char gbMusicOn;
 // 5BB1ED: using guessed type char leveltype;
 
-int __fastcall gamemenu_slider_music_sound(TMenuItem *menu_item)
+int  gamemenu_slider_music_sound(TMenuItem *menu_item)
 {
 	return gmenu_slider_get(menu_item, VOLUME_MIN, VOLUME_MAX);
 }
 
-void __fastcall gamemenu_sound_volume(int a1)
+void  gamemenu_sound_volume(int a1)
 {
 	int v1; // ecx
 	int v2; // esi
@@ -302,7 +345,7 @@ void __fastcall gamemenu_sound_volume(int a1)
 }
 // 4A22D5: using guessed type char gbSoundOn;
 
-void __fastcall gamemenu_gamma(int a1)
+void  gamemenu_gamma(int a1)
 {
 	int v1; // eax
 	int v2; // eax
@@ -326,7 +369,7 @@ int __cdecl gamemenu_slider_gamma()
 	return gmenu_slider_get(&sgOptionMenu[2], 30, 100);
 }
 
-void __cdecl gamemenu_color_cycling()
+void gamemenu_color_cycling(BOOL bActivate)
 {
 	palette_set_color_cycling(palette_get_colour_cycling() == 0);
 	sgOptionMenu[3].pszStr = color_cycling_toggle_names[palette_get_colour_cycling() & 1];
