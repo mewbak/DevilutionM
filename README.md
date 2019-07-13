@@ -2,6 +2,7 @@
 
 ## Synopsis
 This is an ported version of Devilution(see link below) to Android. 
+Here is a youtube install how to video [How To Install](https://www.youtube.com/watch?v=9pO07ypkf5Q)
 
 
 
