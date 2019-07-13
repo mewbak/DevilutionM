@@ -99,4 +99,6 @@ https://github.com/suikki/simpleSDL/ (Android + CMake)
 The example libSDL2 program which draws the square on screen was found at https://stackoverflow.com/questions/21890627/drawing-a-rectangle-with-sdl2/21903973#21903973.
 
 The Google NDK example projects were very helpful: https://github.com/googlesamples/android-ndk
-# AnDroidablo
+
+## Youtube Install Video
+https://www.youtube.com/watch?v=9pO07ypkf5Q
