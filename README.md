@@ -62,16 +62,17 @@ On YOUR ANDROID DEVICE do the following:
 
 ## similar projects
 This is an old version of Devilution which compiles using the GCC compiler. 
-https://github.com/ApertureSecurity/AnDroidablo
+[Devilution - The Main Project](https://github.com/diasurgical/devilution) 
+[AnDroidDiablo - Project Using Old Code](https://github.com/ApertureSecurity/AnDroidablo)
+[DevilutionX   - More Modern Project](https://github.com/diasurgical/devilutionX)
 
 
 ## Compiling the sample program (Android Studio)
-
 - Install Android Studio
 - install the Android SDK in a directory E.G /home/YOURUSER/Sdk/
 - Download the last version of the NDK supporting GCC here 
 - Install the NDK package and unzip it in the /home/YOURUSER/sdk/
-- Make and Edit the local.properties file in your /PROJECT/android/ and add these lines.
+- Make and Edit the local.properties file in your /PROJECT/android/ and add the following lines.
 
 ```
 sdk.dir = /home/YOURUSER/Android/Sdk/
@@ -84,10 +85,11 @@ cd android
 ./gradlew installDebug
 ```
 
-
 There, it's done!
 
 ## Thanks
+
+
 
 Most of the code here is inspired by these repositories:
 This helo world android template.
