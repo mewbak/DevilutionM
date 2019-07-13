@@ -114,8 +114,8 @@ void SetupTownStores()
 		l = 6;
 	if (l > 16)
 		l = 16;
-	SpawnStoreGold();
-	SpawnSmith(l);
+	SpawnStoreGold(); /*CRASH -- The ending condition for exiting the loop is never properly checked. this will eventually overwrite other data.*/
+	SpawnSmith(l);	/*CRASH -- This is the same for all of these generate random item functions.*/
 	SpawnWitch(l);
 	SpawnHealer(l);
 	SpawnBoy(plr[myplr]._pLevel);

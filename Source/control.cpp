@@ -170,8 +170,8 @@ int SpellPages[6][7] = {
 	{ -1, -1, -1, -1, -1, -1, -1 }
 };
 
-void DrawSpellCel(int xp, int yp, BYTE *Trans, int nCel, int w)
-{
+void DrawSpellCel(int xp, int yp, BYTE *Trans, int nCel, int w) /*CRASH HERE for drawing the Spellicon in the right pane.*/
+{                                                               /*you can bypass this by commenting out this function*/
 	BYTE *dst, *tbl, *end;
 
 	/// ASSERT: assert(gpBuffer);

@@ -57,7 +57,18 @@ void gmenu_print_text(int x, int y, char *pszStr)
 		c = gbFontTransTbl[(BYTE)*pszStr++];
 		c = lfontframe[c];
 		if (c)
-			CelDecodeLightOnly(x, y, BigTGold_cel, c, 46);
+		if(gbRunGame == true){
+				CelDecodeLightOnly(x, y, (char *)BigTGold_cel, c, 46);
+			}
+			else{
+				CelDecodeLightOnly(x, y, (char *)TitleMenuText, c, 46);
+
+			}
+			
+
+
+
+
 		x += lfontkern[c] + 2;
 	}
 }
@@ -90,7 +101,12 @@ void gmenu_init_menu()
 	optbar_cel = LoadFileInMem("Data\\optbar.CEL", 0);
 	pTitlgrayCel_sgpBackCel = LoadFileInMem("Gendata\\Titlgray.CEL", 0);
 	pMedTextCels = LoadFileInMem("Gendata\\Titlqtxt.CEL", 0);
-	GameTitle = LoadFileInMem("Gendata\\Diabfr.CEL",0);
+		GameTitle = LoadFileInMem("Gendata\\Diabfr.CEL",0);
+			TitleMenuText = LoadFileInMem("Gendata\\Titltext.CEL",0);
+
+
+
+
 
 	//LoadArtImage("ui_art\\smlogo.pcx", &pPcxLogoImage, 15, dwData);
 

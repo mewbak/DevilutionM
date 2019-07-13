@@ -139,27 +139,9 @@ BOOL nthread_has_500ms_passedz(BOOL unused)
 }
 
 
-	Uint64 NOW = SDL_GetPerformanceCounter();
-	Uint64 LAST = 0;
-	double deltaTime = 0;
 
 
-bool GetDeltaTime()
-{
-   LAST = NOW;
-   NOW = SDL_GetPerformanceCounter();
 
-   deltaTime = (double)((NOW - LAST)*1000 / (double)SDL_GetPerformanceFrequency() );
-
-	//printf("DELTA %f\n", deltaTime*100);
-    if (deltaTime > 0.005000){
-		//printf("DELTA time %lf \n\n", deltaTime);
-		return true;
-
-	}
-	return false;
-
-}
 
 void run_game_loop(unsigned int uMsg)
 {
@@ -185,16 +167,16 @@ void run_game_loop(unsigned int uMsg)
     nthread_ignore_mutex(FALSE);
     while(gbRunGame) {
 	
-		if (GetDeltaTime() == true){
-			// multi_process_network_packets();
-        	// game_loop(gbGameLoopStartup);
-        	// msgcmd_send_chat();
-        	// gbGameLoopStartup = FALSE;
-			// drawpanflag = 255;
-			//  DrawAndBlit();
-			// game_loop(gbGameLoopStartup);
+		// if (GetDeltaTime() == true){
+		// 	// multi_process_network_packets();
+        // 	// game_loop(gbGameLoopStartup);
+        // 	// msgcmd_send_chat();
+        // 	// gbGameLoopStartup = FALSE;
+		// 	// drawpanflag = 255;
+		// 	//  DrawAndBlit();
+		// 	// game_loop(gbGameLoopStartup);
 	
-			}
+		// 	}
 
          diablo_color_cyc_logic();
         if(PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE)) {
@@ -228,7 +210,7 @@ void run_game_loop(unsigned int uMsg)
 		}
 		multi_process_network_packets();
 		game_loop(gbGameLoopStartup);
-		msgcmd_send_chat();
+		msgcmd_send_chat();  /*CRASH -- There is some crash here for some unknown reason.*/
 		gbGameLoopStartup = FALSE;
 		DrawAndBlit();
 	}

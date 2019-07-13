@@ -99,11 +99,26 @@ void pfile_encode_hero(const PkPlayerStruct *pPack)
 
 BOOL pfile_open_archive(BOOL a1, DWORD save_num)
 {
-	char FileName[MAX_PATH];
+	#ifdef ANDROID
+	char FileName[MAX_PATH] = "/sdcard/Diablo/";
+	char SrcStr  [MAX_PATH];
+    strcat(FileName,SrcStr+2);
+    strcpy(SrcStr, FileName);
 
-	pfile_get_save_path(FileName, sizeof(FileName), save_num);
+    if (OpenMPQ(SrcStr, FALSE, save_num))
+        return TRUE;
+	#else
+	char FileName[MAX_PATH];
+	pfile_get_save_path(SrcStr, sizeof(SrcStr), save_num);
+
 	if (OpenMPQ(FileName, FALSE, save_num))
 		return TRUE;
+	#endif
+
+
+
+
+
 
 	if (a1 && gbMaxPlayers > 1)
 		mpqapi_store_default_time(save_num);
@@ -112,10 +127,35 @@ BOOL pfile_open_archive(BOOL a1, DWORD save_num)
 
 void pfile_get_save_path(char *pszBuf, DWORD dwBufSize, DWORD save_num)
 {
+
+#ifdef ANDROID
 	DWORD plen;
 	char *s;
+	char path[MAX_PATH] = "/sdcard/Diablo/";
+	char dir[MAX_PATH];
+	const char *fmt = "multi_%d.sv"; // look here and fix this.. //change
+
+	if (gbMaxPlayers <= 1)
+		fmt = "single_%d.sv";
+
+	// BUGFIX: ignores dwBufSize and uses MAX_PATH instead
+	plen = GetModuleFileName(ghInst, pszBuf, MAX_PATH);
+	s = strrchr(pszBuf, '\\');
+	if (s)
+		*s = '\0';
+
+	if (!plen)
+		app_fatal("Unable to get save directory");
+
+	sprintf(path, fmt, save_num);// Need to combine path and file name?
+	strcat(pszBuf, path);
+	_strlwr(pszBuf);
+
+#else
+    DWORD plen;
+	char *s;
 	char path[MAX_PATH];
-	const char *fmt = "\\multi_%d.sv";
+	const char *fmt = "\\multi_%d.sv"; // look here and fix this.. //change
 
 	if (gbMaxPlayers <= 1)
 		fmt = "\\single_%d.sv";
@@ -132,6 +172,9 @@ void pfile_get_save_path(char *pszBuf, DWORD dwBufSize, DWORD save_num)
 	sprintf(path, fmt, save_num);
 	strcat(pszBuf, path);
 	_strlwr(pszBuf);
+#endif
+
+
 }
 
 void pfile_flush(BOOL is_single_player, DWORD save_num)
@@ -361,14 +404,36 @@ BOOL pfile_read_hero(HANDLE archive, PkPlayerStruct *pPack)
  */
 HANDLE pfile_open_save_archive(BOOL *showFixedMsg, DWORD save_num)
 {
-	char SrcStr[MAX_PATH];
-	HANDLE archive;
+#ifdef ANDROID
+    char SaveDir[MAX_PATH] = "/sdcard/Diablo/"; // Full path to SAVDIR
+    char SrcStr[MAX_PATH];
+    HANDLE archive;
 
-	pfile_get_save_path(SrcStr, sizeof(SrcStr), save_num);
-	if (SFileOpenArchive(SrcStr, 0x7000, 0, &archive))
-		return archive;
-	return NULL;
-}
+
+
+    pfile_get_save_path(SrcStr, sizeof(SrcStr), save_num);
+    strcat(SaveDir,SrcStr+1);
+    printf("FULL ITEM ? %s \n", SaveDir );
+    strcpy(SrcStr, SaveDir);
+
+    if (SFileOpenArchive(SrcStr, 0x7000, 0, &archive))
+        return archive;
+    return NULL;
+#else   // IF NOT ANDROID
+
+    char SrcStr[MAX_PATH];
+    HANDLE archive;
+
+    pfile_get_save_path(SrcStr, sizeof(SrcStr), save_num);
+    if (SFileOpenArchive(SrcStr, 0x7000, 0, &archive))
+        return archive;
+    return NULL;
+
+
+#endif
+
+
+    }
 
 void pfile_SFileCloseArchive(HANDLE hsArchive)
 {

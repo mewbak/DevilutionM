@@ -13,6 +13,12 @@ extern TMenuItem *sgpCurrentMenu; // idb
 extern BYTE *option_cel;
 extern int sgCurrentMenuIdx; // weak
 extern BYTE * GameTitle;
+void DedicationScreen();
+bool GetDeltaTime();
+
+// extern Uint64 NOW;// = SDL_GetPerformanceCounter();
+// extern Uint64 LAST;// = 0;
+// extern double deltaTime;// = 0;
 
 void gmenu_draw_pause();
 void gmenu_print_text(int x, int y, char *pszStr);

@@ -38,10 +38,11 @@ BOOL __stdcall UiSelHeroSingDialog(BOOL(__stdcall *fninfo)(BOOL(__stdcall *fninf
     fninfo(&ui_add_hero_info);
 
     if (CreateSinglePlayerChar) {
-        const char *test_name = HeroUndecidedName;
+        const char *test_name = "Teste";HeroUndecidedName;
         DUMMY_PRINT("create hero: %s", test_name);
 
         strcpy(name, test_name);
+       
 
         _uiheroinfo hero_info = {1};
         strcpy(hero_info.name, test_name);

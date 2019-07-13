@@ -1,6 +1,10 @@
 #pragma once
-
+#ifdef linux
+#include <SDL2/SDL.h>
+#endif
+#ifdef ANDROID
 #include <SDL.h>
+#endif
 //#include <SDL_image.h>
 #include <SDL_mixer.h>
 #include "miniwin_sdl.h"

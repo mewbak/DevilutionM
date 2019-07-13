@@ -4,6 +4,34 @@
 
 
 //ADDITIONAL VARS
+
+typedef enum UiFlags {
+	UIS_SMALL    = 1 << 0,
+	UIS_MED      = 1 << 1,
+	UIS_BIG      = 1 << 2,
+	UIS_HUGE     = 1 << 3,
+	UIS_CENTER   = 1 << 4,
+	UIS_RIGHT    = 1 << 5,
+	UIS_VCENTER  = 1 << 6,
+	UIS_SILVER   = 1 << 7,
+	UIS_GOLD     = 1 << 8,
+	UIS_SML1     = 1 << 9,
+	UIS_SML2     = 1 << 10,
+	UIS_LIST     = 1 << 11,
+	UIS_DISABLED = 1 << 12,
+	UIS_HIDDEN   = 1 << 13,
+} UiFlags;
+
+typedef struct Art {
+	BYTE *data;
+	DWORD width;
+	DWORD height;
+	bool masked = false;
+	BYTE mask;
+} Art;
+
+Art ArtBackground;
+
 DWORD gdwTurnsInTransit;
 DWORD gdwLargestMsgSize;
 DWORD gdwNormalMsgSize;
@@ -13,6 +41,25 @@ BYTE sgbNetUpdateRate;
  BYTE gbDupSounds;
  char unk_volume[4][2];
 BYTE *gpBuffer;
+
+
+typedef enum UiTypes {
+	UI_TEXT,
+	UI_IMAGE,
+	UI_BUTTON,
+	UI_LIST,
+	UI_EDIT,
+} UiTypes;
+
+typedef struct UI_Item {
+	SDL_Rect rect;
+	UiTypes type;
+	int flags;
+	int value;
+	char *caption;
+	const void *context;
+} UI_Item;
+
 
 // int ObjTypeConv[113];
 // char *ObjMasterLoadList[56];
@@ -53,8 +100,8 @@ char byte_634478; // weak
 //TMenuItem *dword_634480; // idb
 int dword_63448C; // weak
 
-void *pPentSmall;
-void *pTitlqtxtCel;
+BYTE *pPentSmall;
+BYTE *pTitlqtxtCel;
 //BYTE *sgpLogo;
 
 //int gb_Lfont_pix_width;
@@ -62,26 +109,26 @@ void *pTitlqtxtCel;
 
 int gdwLogoWidth;
 int gdwLogoHeight;
-void *pPcxLogoImage;
-void *pTitlgrayCel_sgpBackCel;
+BYTE *pPcxLogoImage;
+BYTE *pTitlgrayCel_sgpBackCel;
 
 int gdwTitleWidth;
 int gdwTitleHeight;
-void *pPcxTitleImage;
+BYTE *pPcxTitleImage;
 
 int gdwCursorWidth;
 int gdwCursorHeight;
-void *pPcxCursorImage;
+BYTE *pPcxCursorImage;
 
 int gdwHeroHeight;
 int gdwHeroWidth;
-void *pPcxHeroImage;
+BYTE *pPcxHeroImage;
 
 int gdwSHeroHeight;
 int gdwSHeroWidth;
-void *pPcxSHeroImage;
+BYTE *pPcxSHeroImage;
 
-void *pPcxGameImage;
+BYTE *pPcxGameImage;
 
 
 int gdwFontWidth;
@@ -100,38 +147,11 @@ void *pPcxFont3Image;
 unsigned char *pFont3;
 
 
-void *GameTitle;
 int GameTitleHeight;
 int GameTitleWidth;
 
 void * TitleMenuText; 
 void * MenuPentegram;
-
-
-
-
-
-
-//int locktbl[256];
-
-// void unlock_buf(BYTE idx)
-// {
-// #ifdef _DEBUG
-// 	if (!locktbl[idx])
-// 		app_fatal("Draw lock underflow: 0x%x", idx);
-// 	--locktbl[idx];
-// #endif
-//     printf("_unlock_buf");
-// 	unlock_buf_priv();
-// }
-
-// void lock_buf(BYTE idx)
-// {
-// #ifdef _DEBUG
-// 	++locktbl[idx];
-// #endif
-// 	lock_buf_priv();
-// }
 
 
 
@@ -198,12 +218,6 @@ int Window_Height = 480;
 
 
 
-//#ifdef ANDROID
-//int Window_Width  = 640;
-//int Window_Height = 480;
-//#endif
-
-
 int LogoWidth;
 int LogoHeight;
 
@@ -256,7 +270,7 @@ SDL_Surface *CursorImg;
 SDL_Surface *DiabloTitle;
 
 int bloaded = 0;
-void *pPcxCreditsImage;
+BYTE *pPcxCreditsImage;
 int gdwCreditsWidth;
 int gdwCreditsHeight;
 
@@ -804,17 +818,13 @@ void SdlDiabloMainWindow()
 	//IMG_Init(IMG_INIT_PNG);
 	SDL_Init(SDL_INIT_VIDEO);
 
-    // #ifdef ANDROID
-	// window = SDL_CreateWindow("Diablo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Window_Width, Window_Height,SDL_WINDOW_INPUT_GRABBED);
-    // #endif
-
     #ifdef MINIWIN
       window = SDL_CreateWindow("Diablo", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Window_Width, Window_Height, SDL_WINDOW_RESIZABLE );
     #endif
 
 
     renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_RenderSetLogicalSize(renderer, 640, 480);
+    SDL_RenderSetLogicalSize(renderer, 800, 600);
 	printf("Window And Renderer Created!\n");
 
 	const int pitch = SCREEN_WIDTH + 64 + 64;
@@ -833,11 +843,8 @@ void SdlDiabloMainWindow()
 	lock_buf_priv();
 }
 
-
-
 void DrawArtImage(int SX, int SY, int SW, int SH, int nFrame, void *pBuffer)
 {
-
     //FIX LATER!! CHANGE
 	BYTE *src = (BYTE *)pBuffer + (SW * SH * nFrame);
 	//BYTE *dst = (BYTE *)&gpBuffer->row[SY].pixels[SX];
@@ -852,7 +859,7 @@ void DrawArtImage(int SX, int SY, int SW, int SH, int nFrame, void *pBuffer)
 
 void __fastcall print_title_str_large(int a1, int a2, char *a3)
 {
-	assert(BigTGold_cel);
+assert(BigTGold_cel);
 	int screen_y; // [esp+Ch] [ebp-14h]
 	int screen_x; // [esp+10h] [ebp-10h]
 	char v5; // [esp+14h] [ebp-Ch]
@@ -947,6 +954,23 @@ int __fastcall GetPCXFontWidth(char *str, BYTE *font)
 
 void ShowCredts()
 {
+
+/*
+
+	int diablogo_cel_frame = 1;
+
+	int MyPcxDelay = 60;
+	int MyPcxFRAME = (SDL_GetTicks() / MyPcxDelay) % 15;
+	if (++MyPcxFRAME == 29) {
+		MyPcxFRAME = 1;
+	}
+
+
+*/
+
+
+
+
 	ybase += 1;
 	if (ybase >= pFont2[1]) {
 		ybase = 0;
@@ -960,7 +984,7 @@ void ShowCredts()
 			creditline++;
 	}
 
-	CelDecodeOnly(64, 639, (BYTE *)pTitlgrayCel_sgpBackCel, 1, 640);
+	CelDecodeOnly(64, 639, pTitlgrayCel_sgpBackCel, 1, 640);
 	//	DrawArtImage(0, 0, gdwCreditsWidth, gdwCreditsHeight, 0, pPcxCreditsImage);
 
 
@@ -991,22 +1015,23 @@ void ShowCredts()
 }
 
 ///////////////////////////Renders
-
+int MyPcxFRAME =  0; 
 void RenderDiabloLogo()
 {
 	int diablogo_cel_frame = 1;
 
-	int MyPcxDelay = 60;
-	int MyPcxFRAME = (SDL_GetTicks() / MyPcxDelay) % 15;
-	if (++MyPcxFRAME == 29) {
+	//int MyPcxDelay = 60;
+	//= (SDL_GetTicks() / MyPcxDelay) % 15;
+    //if (GetDeltaTime() == true ){
+     
+     
+        ++MyPcxFRAME;
+   // }
+	if (MyPcxFRAME == 29) {
 		MyPcxFRAME = 1;
 	}
 
-    		CelDecodeOnly(236, 262, (BYTE *)sgpLogo, 1, 296);
-
-    gmenu_draw();
-
-	//CelDecodeOnly(64, 360, sgpLogo, 1, 640);
+	CelDecodeOnly(64, 360, GameTitle, MyPcxFRAME, 640);
 
 	//	DrawArtWithMask(320 - (gdwLogoWidth / 2), 0, gdwLogoWidth, gdwLogoHeight, MyPcxFRAME, 250, pPcxLogoImage);
 
@@ -1021,7 +1046,7 @@ void DrawCursor(int mx, int my)
 
 	int lines = gdwCursorWidth;
 
-	CelDecodeOnly(403, 326, (BYTE*)pPcxCursorImage, 1, 36);
+	CelDecodeOnly(403, 326, pPcxCursorImage, 1, 36);
 
 	//	DrawArtWithMask(mx, my, gdwCursorWidth, lines, 0, 0, pPcxCursorImage);
 	unlock_buf_priv();
@@ -1055,6 +1080,27 @@ void DrawMouse()
 	//	unlock_buf_priv();
 }
 
+void DedicationScreen(){
+CelDecodeOnly(64, 639, pTitlgrayCel_sgpBackCel, 1, 640);
+print_title_str_small(100, 300,"DedicaTed To David Brevik, Erich Schaefer,");
+print_title_str_small(100, 340,"Max Schaefer, MaTT Uelman, and The ");
+print_title_str_small(100, 380,"Blizzard North Team ThaT Gave Us A Childhood.");
+print_title_str_small(100, 620,"Loading Menu...");
+
+//RenderDiabloLogo();
+
+
+}
+
+
+
+
+
+
+
+
+
+
 void SDL_RenderDiabloMainPage()
 {
 	CelDecodeOnly(64, 639, pTitlgrayCel_sgpBackCel, 1, 640);
@@ -1078,16 +1124,16 @@ void SDL_RenderDiabloMainPage()
 	RenderDiabloLogo();
 
 	// print_title_str_large();
-    //X 166 , Y 137
-	gmenu_print_text(230,360,  "Single Player");
-	gmenu_print_text(230,410,  "Multi Player");
-	gmenu_print_text(230,460,  "Show Replay");
-	gmenu_print_text(230,510,  "Play Credits");
+	gmenu_print_text(230,400,  "Single Player");
+	gmenu_print_text(230,440,  "Multi Player");
+	gmenu_print_text(230,480,  "Show Replay");
+	gmenu_print_text(230,520,  "Play Credits");
 	gmenu_print_text(230,560,  "Exit  Diablo");
 
 	CelDecodeOnly(PentPositionX1, PentPositionY1, MenuPentegram, (int)Pentframe, 48);
 	CelDecodeOnly(PentPositionX2, PentPositionY2, MenuPentegram, (int)Pentframe, 48);
 
+   // print_title_str_small(0, 630,"DedicaTed To David Brevik, Erich Schaefer, Max Schaefer,");
 	//ADD_PlrStringXY(0, 600 - 150, 640, "DedicaTed To David Brevik, Erich Schaefer, Max Schaefer,", COL_RED);
 	//ADD_PlrStringXY(0, 600 - 130, 640, " MaTT Uelman, and The Blizzard North Team ThaT Gave Us A Childhood.", COL_RED);
 }
