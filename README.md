@@ -14,7 +14,7 @@ It doesn't 100% work yet but free free to ask any question and if I know, it wil
 - Android SDK and NDK (with Android Build-tools 28.0.3 and Android Platform API 28, though these are configurable)
 - ANDROID_HOME and ANDROID_NDK_HOME environment variables set (I did this in /etc/environment)
 - diablodat.mpq from your Diablo game (GoG version should be fine.)
-- prealpha.mpq from the publicly available resource [DIABLO PREALPHA](https://diablo-evolution.net/files/prereleasedemo.7z) 
+- prealpha.mpq from the publicly available resource [Diablo Prealpha](https://diablo-evolution.net/files/prereleasedemo.7z) 
 - Download the SDL dependancies 
 
  Download the dependencies (SDL2 and SDL2_image SDL2_mixer) as above or manually like below. Then open the ./android folder as an existing project in Android Studio.
